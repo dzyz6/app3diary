@@ -1,125 +1,130 @@
+import 'package:diary/assets/icon/my_flutter_app_icons.dart';
+import 'package:diary/sizecontrol.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main(){
+  runApp(MaterialApp(home: mainpage(),));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+var colororigin=Color(0xFF445B28);
+var colorclick=Color(0xFFDCEEC4);
 
-  // This widget is the root of your application.
+//获取时间
+DateTime dateTime= DateTime.now();
+
+class mainpage extends StatefulWidget {
+  const mainpage({super.key});
+
+  @override
+  State<mainpage> createState() => _mainpageState();
+}
+
+class _mainpageState extends State<mainpage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
+
+
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+        title: Row(
+          children: [
+            SizedBox(width: Adapt.pt(10),),
+            Text(dateTime.month.toString(),style: TextStyle(color: Colors.white,fontSize: Adapt.pt(25)),),
+            SizedBox(width: Adapt.pt(3),),
+            Text("月",style: TextStyle(color: Colors.white,fontSize: Adapt.pt(25)),),
+            SizedBox(width: Adapt.pt(10),),
+            Text(dateTime.year.toString(),style: TextStyle(color: Colors.white,fontSize: Adapt.pt(20)),),
+
           ],
         ),
+
+        actions: [
+          IconButton(onPressed: (){}, icon: Icon(Icons.search_outlined,color: Colors.white,),padding: EdgeInsets.all(0),iconSize: 30,),
+          IconButton(onPressed: (){}, icon: Icon(Icons.location_on_outlined,color: Colors.white,),padding: EdgeInsets.all(0),iconSize: 30,),
+        ],
+
+        backgroundColor: Color(0xFF7B9F4D),
+
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      body: Column(
+        children: [
+          Row(
+            children: [
+              SizedBox(width: Adapt.pt(280),),
+              Container(
+                padding: EdgeInsets.only(left: Adapt.pt(12),right: Adapt.pt(12),top: Adapt.pt(3),bottom: Adapt.pt(3)),
+                margin: EdgeInsets.all(Adapt.pt(5)),
+                child: Text("今日",style: TextStyle(fontSize: Adapt.pt(13)),),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: Colors.black)
+                ),
+              ),
+
+              Container(
+                padding: EdgeInsets.only(left: Adapt.pt(12),right: Adapt.pt(12),top: Adapt.pt(3),bottom: Adapt.pt(3)),
+                margin: EdgeInsets.all(Adapt.pt(5)),
+                child: Text("分享",style: TextStyle(fontSize: Adapt.pt(13)),),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Colors.black)
+                ),
+              ),
+            ],
+          ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text("日",style: TextStyle(color: Colors.grey,fontSize: Adapt.pt(22)),),
+              Text("一",style: TextStyle(color: Colors.grey,fontSize: Adapt.pt(22)),),
+              Text("二",style: TextStyle(color: Colors.grey,fontSize: Adapt.pt(22)),),
+              Text("三",style: TextStyle(color: Colors.grey,fontSize: Adapt.pt(22)),),
+              Text("四",style: TextStyle(color: Colors.grey,fontSize: Adapt.pt(22)),),
+              Text("五",style: TextStyle(color: Colors.grey,fontSize: Adapt.pt(22)),),
+              Text("六",style: TextStyle(color: Colors.grey,fontSize: Adapt.pt(22)),),
+
+            ],
+          )
+
+
+
+
+
+        ],
+
+      ),
+
+      bottomNavigationBar: ClipRRect(
+
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20), ),
+        child: BottomAppBar(
+
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+
+              //日历图标
+              IconButton(onPressed: (){},
+                  icon: Icon(MyFlutterApp.calender,color: Color(0xFF445B28),size: Adapt.pt(35),)),
+              //日记
+              IconButton(onPressed: (){},
+                  icon: Icon(MyFlutterApp.book,color: Color(0xFF445B28),size: Adapt.pt(30),)),
+              //添加
+              FloatingActionButton(onPressed: (){},elevation: 0,backgroundColor: Color(0xFF7B9F4D),shape: CircleBorder(),child: Icon(Icons.add,size: Adapt.pt(53),color: Colors.white,),),
+              //日记串
+              IconButton(onPressed: (){},
+                  icon: Icon(MyFlutterApp.circle,color: Color(0xFF445B28),size: Adapt.pt(30),)),
+              //用户
+              IconButton(onPressed: (){},
+                  icon: Icon(MyFlutterApp.head,color: Color(0xFF445B28),size: Adapt.pt(30),)),
+            ],
+          ),
+          color: Color(0xFFDCEEC4),
+        ),
+      ),
+
+      
     );
   }
 }
