@@ -20,6 +20,7 @@ class _diarypageState extends State<diarypage> {
       body: CustomScrollView(
         slivers:<Widget> [
           SliverAppBar(//类微信头部
+            automaticallyImplyLeading: false,
             backgroundColor: Color(0xFF7B9F4D),
             pinned: true,
             snap: false,
