@@ -2,6 +2,8 @@ import 'package:diary/register.dart/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/sizecontrol.dart';
 
+bool visible = true;
+
 class Interface extends StatelessWidget {
   const Interface({super.key});
 
@@ -12,6 +14,7 @@ class Interface extends StatelessWidget {
         home: Scaffold(
       body: Container(
         width: double.maxFinite,
+        height: double.maxFinite,
         decoration: new BoxDecoration(
           color: Color(0xFFDCEEC4),
         ),
@@ -26,20 +29,21 @@ class InterfaceText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return 
+    SingleChildScrollView(child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: Adapt.pt(501),
-            height: Adapt.pt(501),
+            width: Adapt.pt(490),
+            height: Adapt.pt(490),
             child: Image.asset(
               'assets/images/login1.png',
               fit: BoxFit.cover,
             ),
           ),
           Container(
-            margin: EdgeInsets.only(top: Adapt.hpt(18)),
+            margin: EdgeInsets.only(top: Adapt.hpt(10)),
             alignment: Alignment.center,
             child: Expanded(
               child: Container(
@@ -62,8 +66,17 @@ class InterfaceText extends StatelessWidget {
             height: Adapt.pt(48),
             width: Adapt.pt(295),
           ),
+          visible
+              ? Container(
+                  width: Adapt.pt(255),
+                  alignment: Alignment.centerLeft,
+                  child: Text('请输入正确的用户名',
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 255, 7, 7),
+                          fontSize: 12)))
+              : Container(),
           Container(
-            margin: EdgeInsets.only(top: Adapt.hpt(28)),
+            margin: EdgeInsets.only(top: Adapt.hpt(10)),
             alignment: Alignment.center,
             child: Expanded(
               child: Container(
@@ -86,33 +99,41 @@ class InterfaceText extends StatelessWidget {
             height: Adapt.pt(48),
             width: Adapt.pt(295),
           ),
+                    visible
+              ? Container(
+                  width: Adapt.pt(255),
+                  alignment: Alignment.centerLeft,
+                  child: Text('请输入正确的密码',
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 255, 7, 7),
+                          fontSize: 12)))
+              : Container(),
           Container(
-            child: 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextButton(
-                      onPressed: () {},
-                      child: Text('忘记登录密码',
-                          style: TextStyle(
-                              color: Color(0xFF445B28),
-                              fontSize: Adapt.pt(12)))),
-                  TextButton(
-                      onPressed: () {Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => RInterface() )
-                );},
-                      child: Text('注册',
-                          style: TextStyle(
-                              color: Color(0xFF445B28),
-                              fontSize: Adapt.pt(12)))),
-                ],
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TextButton(
+                    onPressed: () {},
+                    child: Text('忘记登录密码',
+                        style: TextStyle(
+                            color: Color(0xFF445B28), fontSize: Adapt.pt(12)))),
+                TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => RInterface()));
+                    },
+                    child: Text('注册',
+                        style: TextStyle(
+                            color: Color(0xFF445B28), fontSize: Adapt.pt(12)))),
+              ],
+            ),
             width: Adapt.pt(295),
           ),
           Container(
-            margin: EdgeInsets.only(top: Adapt.pt(30)),
+            margin: EdgeInsets.only(top: Adapt.pt(10)),
             child: ElevatedButton(
               child: Text(
                 '登录',
@@ -131,6 +152,7 @@ class InterfaceText extends StatelessWidget {
                       MaterialStateProperty.all(Color(0xFF7B9F4D))),
             ),
           ),
-        ]);
+        ]),)
+    ;
   }
 }
