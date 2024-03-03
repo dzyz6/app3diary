@@ -361,7 +361,7 @@ class _mainpageState extends State<mainpage> {
 
               diarypage(),
 
-              diarychuan(),
+              Diarychuan(),
 
               person(),
 

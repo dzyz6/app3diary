@@ -1,22 +1,93 @@
 import 'package:dio/dio.dart';
 import 'dart:convert';
-
-void main() {
-postRequestFunction2();
+import 'package:crypto/crypto.dart';
+import'package:diary/user.dart';
+String encryptMd5(String str) {
+ final utf = utf8.encode(str);
+ final digest = md5.convert(utf);
+ final encryptStr = digest.toString(); 
+ return encryptStr;
 }
-void postRequestFunction2() async{
-    String url = "http://192.168.124.13:4523/m1/3967937-0-default/register";
-    ///创建Dio
-    Dio dio = new Dio();
-    ///创建Map 封装参数
-    Map<String,dynamic> map = Map();
-    map['username']="1205874457";
-    map['password']="1234";
-    print(map);
-    ///发起post请求
-    Response response =  await dio.post(url,data: map);
 
-    var data= jsonDecode(response.toString());//3
-    print(response);
+/*class AuthInterCeptor extends Interceptor {
+  AuthInterCeptor();
+
+  @override
+  void onRequest(
+      RequestOptions options,
+      RequestInterceptorHandler handler,
+      ) async {
+    // 创建一个终端列表，这些你不需要token
+    final listOfPaths = <String>[
+      '/send-top',
+      '/validate-otp'
+    ];
+    // 检查如果请求端点匹配
+    if (listOfPaths.contains(options.path.toString())) {
+      // 如果端点匹配然后跳到追加令牌
+      return handler.next(options);
+    }
+    // 在这里加载令牌到 header
+    var token = '';
+    options.headers.addAll({'Authorization': token});
+    return handler.next(options);
   }
 
+  // 你也可以在响应或错误时执行一些动作
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    return handler.next(response);
+  }
+
+  @override
+  void onError(DioError err, ErrorInterceptorHandler handler) {
+    return handler.next(err);
+  }
+}*/
+
+class RegisterFunction{
+  RegisterFunction();
+var  user = Users();
+ Future <void> postFunctionR(String username,String password) async{
+    String url = "http://172.23.146.5:25565/register";
+    Dio dio =  Dio();
+    dio.options.baseUrl=url;
+    Map<String,dynamic> map = Map();
+    map['username']=username;
+    map['password']=password;
+    map['password']=encryptMd5(map['password']);
+    Response response =  await dio.post(url,data: map);
+ user =Users.fromJson(response.data);
+  print(user.data?.uid);
+  print(user.code);
+  }
+}
+Future<String> GetFuction() async{
+    String url = "http://172.23.146.5:25565/userAgreement";
+    Dio dio = new Dio();
+    dio.options.baseUrl=url;
+    Response response = await dio.get(url);
+    var text = LongText.fromJson(response.data);
+    return text.data;
+  }
+class LongText {
+  late int code;
+  late String message;
+  late String data;
+
+  LongText({required this.code,required this.message,required this.data});
+
+  LongText.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    message = json['message'];
+    data = json['data'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['code'] = this.code;
+    data['message'] = this.message;
+    data['data'] = this.data;
+    return data;
+  }
+}
