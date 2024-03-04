@@ -36,7 +36,7 @@ class InterfaceText extends StatefulWidget {
 
 class _InterfaceTextState extends State<InterfaceText> {
   var login = LoginFunction();
-
+  late var con=login.user.data;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -167,7 +167,7 @@ class _InterfaceTextState extends State<InterfaceText> {
                       _controllerId.text, _controllerS.text);
                   if (login.user.code == 200) {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => mainpage()));
+                        MaterialPageRoute(builder: (con) => mainpage()));
                   } else {
                     setState(() {
                       visible = true;

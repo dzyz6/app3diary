@@ -9,7 +9,7 @@ String encryptMd5(String str) {
  return encryptStr;
 }
 
-/*class AuthInterCeptor extends Interceptor {
+class AuthInterCeptor extends Interceptor {
   AuthInterCeptor();
 
   @override
@@ -43,15 +43,34 @@ String encryptMd5(String str) {
   void onError(DioError err, ErrorInterceptorHandler handler) {
     return handler.next(err);
   }
-}*/
+}
+
 
 class RegisterFunction{
   RegisterFunction();
 var  user = Users();
+Future<void> tokenTest(String token)async {
+    Dio dio =  Dio();
+    String url = "http://172.23.146.5:25565/createJournal";
+    dio.options.baseUrl=url;
+    dio.options.headers['token']=token;
+   Map<String,dynamic> map = Map();
+    map['location']='saddsd';
+    map['journalTitle']='aaaaa';
+    map['journalText']='aaaaa';
+    map['topJournal']=0;
+    Response response =  await dio.post(url,data: map);
+  print(response);
+  print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+
+}
+
+
  Future <void> postFunctionR(String username,String password) async{
     String url = "http://172.23.146.5:25565/register";
     Dio dio =  Dio();
     dio.options.baseUrl=url;
+    dio.options.headers.addAll({'token':user.data?.token});
     Map<String,dynamic> map = Map();
     map['username']=username;
     map['password']=password;

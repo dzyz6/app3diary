@@ -21,6 +21,6 @@ class LoginFunction{
     map['password']=encryptMd5(map['password']);
     Response response =  await dio.post(url,data: map);
    user = Users.fromJson(response.data);
-    print(user.message);
+    print(user.data?.token);
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:diary/register.dart/data.dart';
 import 'package:flutter/material.dart';
 import './sizecontrol.dart';
 
@@ -330,6 +331,7 @@ class Diarychuan2 extends StatefulWidget {
 }
 
 class _Diarychuan2State extends State<Diarychuan2> {
+  var register =RegisterFunction();
   @override
   Widget build(BuildContext context) {
     return Scaffold(appBar: AppBar(
@@ -339,6 +341,7 @@ class _Diarychuan2State extends State<Diarychuan2> {
             color: Colors.white,
           ),
           onPressed: () {
+          //  register.tokenTest();
             Navigator.pop(context);
           },
         ),
