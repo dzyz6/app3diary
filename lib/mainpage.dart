@@ -10,12 +10,57 @@ import 'package:flutter_pickers/pickers.dart';
 import 'package:flutter_pickers/style/picker_style.dart';
 import 'package:flutter_pickers/time_picker/model/date_mode.dart';
 import 'package:flutter_pickers/time_picker/model/pduration.dart';
+import 'package:geolocator/geolocator.dart';
+
 
 var colororigin = Color(0xFF445B28);
 var colorclick = Color(0xFFDCEEC4);
 
 //获取时间
 DateTime dateTime = DateTime.now();
+
+/// 位置服务
+Future _determinePosition() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+  double longitude=0;
+  double latitude=0;
+  try {
+    /// 手机GPS服务是否已启用。
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      //定位服务未启用，要求用户启用定位服务
+      var res = await Geolocator.openLocationSettings();
+      if (!res) {
+        /// 被拒绝
+        return;
+      }
+    }
+    /// 是否允许app访问地理位置
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      /// 之前访问设备位置的权限被拒绝，重新申请权限
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        /// 再次被拒绝。根据Android指南，你的应用现在应该显示一个解释性UI。
+        return;
+      }
+    } else if (permission == LocationPermission.deniedForever) {
+      /// 之前权限被永久拒绝，打开app权限设置页面
+      await Geolocator.openAppSettings();
+      return;
+    }
+    /// 允许访问地理位置，获取地理位置
+    Position position = await Geolocator.getCurrentPosition();
+    longitude = position.longitude;
+    latitude = position.latitude;
+  } catch (e) {
+    print(e);
+  }
+}
+
+
 
 class mainpage extends StatefulWidget {
   const mainpage({super.key});
@@ -88,7 +133,7 @@ class _mainpageState extends State<mainpage> {
   void initState() {
     super.initState();
     if(_month==dateTime.month&&_year==dateTime.year)
-    {_toggleItemStatus(dateTime.day + 3);};
+    {_toggleItemStatus(dateTime.day + firstDayOfMonth.weekday-1);};
   }
 
   @override
@@ -107,9 +152,20 @@ class _mainpageState extends State<mainpage> {
                     Pickers.showDatePicker(
                         context,
                       pickerStyle: PickerStyle(
+                        textColor: Color(0xFF445B28),
                         cancelButton: Container(
-                          margin: EdgeInsets.all(Adapt.pt(10)),
+                          margin: EdgeInsets.only(left:Adapt.pt(20)),
                           child: Text("取消",style: TextStyle(
+                            fontSize: Adapt.pt(18),
+                            color: Colors.black
+
+                          ),),
+                        ),
+                        commitButton: Container(
+                          margin: EdgeInsets.only(right: Adapt.pt(20)),
+                          child: Text("确定",style: TextStyle(
+                            fontSize: Adapt.pt(18),
+                            color:Color(0xFF7B9F4D),
 
                           ),),
                         ),
@@ -179,6 +235,7 @@ class _mainpageState extends State<mainpage> {
                     ),
                   )),
               actions: [
+                //搜素
                 IconButton(
                   onPressed: () {
                     Navigator.push(context,
@@ -191,8 +248,13 @@ class _mainpageState extends State<mainpage> {
                   padding: EdgeInsets.all(0),
                   iconSize: 30,
                 ),
+
+                //定位
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () async{
+                    await _determinePosition();
+
+                  },
                   icon: Icon(
                     Icons.location_on_outlined,
                     color: Colors.white,
@@ -267,7 +329,7 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "日",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22)),
+                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -275,7 +337,7 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "一",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22)),
+                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -283,7 +345,7 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "二",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22)),
+                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -291,7 +353,7 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "三",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22)),
+                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -299,7 +361,7 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "四",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22)),
+                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -307,7 +369,7 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "五",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22)),
+                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -315,7 +377,7 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "六",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22)),
+                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -326,7 +388,7 @@ class _mainpageState extends State<mainpage> {
                   height: Adapt.pt(360),
                   width: Adapt.pt(390),
                   child: GridView.count(
-                    mainAxisSpacing: Adapt.pt(12),
+                    mainAxisSpacing: Adapt.pt(15),
                     crossAxisSpacing: Adapt.pt(10),
                     scrollDirection: Axis.vertical,
                     physics: NeverScrollableScrollPhysics(),
@@ -380,7 +442,6 @@ class _mainpageState extends State<mainpage> {
                         },
                         child: Container(
                           alignment: Alignment.center,
-                          padding: EdgeInsets.all(Adapt.pt(10)),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.all(Radius.circular(15)),
                             color: _itemStatuses[index]
@@ -392,6 +453,7 @@ class _mainpageState extends State<mainpage> {
                               '$day1',
                               style: TextStyle(
                                   fontSize: Adapt.pt(23),
+                                  fontWeight: FontWeight.w500,
                                   color: _itemStatuses[index]
                                       ? Colors.white
                                       : Color(0xFFC8C8C8)),

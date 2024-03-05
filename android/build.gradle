@@ -1,8 +1,10 @@
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.9.22'
     repositories {
-        google()
-        mavenCentral()
+//        google()
+//        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
     }
 
     dependencies {
@@ -12,8 +14,10 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
-        mavenCentral()
+//        google()
+//        mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
     }
 }
 
