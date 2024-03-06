@@ -1,8 +1,17 @@
+import 'dart:io';
+
+import 'package:diary/mainpage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/sizecontrol.dart';
+import './data.dart';
 
+var visible = false;
 TextEditingController _controllerId = TextEditingController();
 TextEditingController _controllerS = TextEditingController();
+void _doExit() {
+  exit(0);
+}
 
 class RInterface extends StatelessWidget {
   const RInterface({super.key});
@@ -25,19 +34,20 @@ class RInterface extends StatelessWidget {
         backgroundColor: Color(0xFF7B9F4D),
       ),
       body: Container(
-        width: double.maxFinite,
-        decoration: new BoxDecoration(
-          color: Color(0xFFDCEEC4),
-        ),
-        child: RInterfaceText(),
-      ),
+          width: double.maxFinite,
+          decoration: new BoxDecoration(
+            color: Color(0xFFDCEEC4),
+          ),
+          child: 
+          RInterfaceText(),
+          ),
     ));
   }
 }
 
 class RInterfaceText extends StatelessWidget {
-  const RInterfaceText({super.key});
-
+  RInterfaceText({super.key});
+  var register = RegisterFunction();
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -132,8 +142,18 @@ class RInterfaceText extends StatelessWidget {
                     color: Colors.white,
                     fontSize: Adapt.pt(25)),
               ),
-              onPressed: () {
-
+              onPressed: () async{
+               await register.postFunctionR(
+                    _controllerId.text, _controllerS.text);
+                if ( register.user.code == 200) {
+                  register.tokenTest(register.user.data!.token!);
+                 Navigator.push(context,
+                     MaterialPageRoute(builder: (context) => mainpage()));
+                } 
+                else {
+                  String? text = register.user.message;
+                 showMessage(context,text!);
+                }
               },
               style: ButtonStyle(
                   fixedSize: MaterialStateProperty.all(
@@ -145,7 +165,9 @@ class RInterfaceText extends StatelessWidget {
             ),
           ),
           TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                showMyMaterialDialog(context, await GetFuction());
+              },
               child: Text('注册代表同意《用户协议》',
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
@@ -153,4 +175,103 @@ class RInterfaceText extends StatelessWidget {
                       fontSize: Adapt.pt(12)))),
         ]);
   }
+}
+
+void showMyMaterialDialog(BuildContext context, String text) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          shape: BeveledRectangleBorder(
+            borderRadius: BorderRadius.circular(0),
+          ),
+          title: Center(child: Text("服务协议和隐私政策")),
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 20,
+          ),
+          content: Container(
+            height: 300,
+            child: Column(children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                child: Expanded(
+                  child: SingleChildScrollView(
+                    child: Text(text),
+                  ),
+                ),
+                height: 250,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                              top: BorderSide(
+                                  width: 2, color: Color(0xffDCDCDC))),
+                        ),
+                        alignment: Alignment.bottomCenter,
+                        height: 40,
+                        child: Text(
+                          '暂不使用',
+                          style: TextStyle(fontSize: 20),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      onTap: () {
+                        _doExit();
+                      },
+                    ),
+                  ),
+                  Expanded(
+                      child: InkWell(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                            top:
+                                BorderSide(width: 2, color: Color(0xffDCDCDC))),
+                      ),
+                      alignment: Alignment.bottomCenter,
+                      height: 40,
+                      child: Text(
+                        '同意',
+                        style:
+                            TextStyle(fontSize: 20, color: Color(0xff1563BF)),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ))
+                ],
+              )
+            ]),
+          ));
+    },
+  );
+}
+
+void showMessage(BuildContext context, String  text) {
+  showCupertinoDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("注册失败"),
+        content:  Text(text),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("确定")),
+        ],
+      );
+    },
+  );
 }
