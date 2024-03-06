@@ -269,7 +269,9 @@ class _editorpageState extends State<editorpage> {
             }, icon: Icon(Icons.terrain)),
             IconButton(onPressed: (){}, icon: Icon(Icons.mic_none_rounded)),
             SizedBox(width: Adapt.pt(195),),
-            IconButton(onPressed: (){}, icon: Icon(Icons.check)),
+            IconButton(onPressed: (){
+
+            }, icon: Icon(Icons.check)),
           ],
         ),
       ),
