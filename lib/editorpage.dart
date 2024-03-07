@@ -4,12 +4,9 @@ import 'package:geolocator/geolocator.dart';
 import 'sizecontrol.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
-
-
+import 'user.dart';
 
 var textcontroller;
-
-
 
 /// 位置服务
 Future _determinePosition() async {
@@ -48,7 +45,8 @@ Future _determinePosition() async {
     }
 
     /// 允许访问地理位置，获取地理位置
-    position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     longitude = position.longitude;
     latitude = position.latitude;
   } catch (e) {
@@ -56,54 +54,47 @@ Future _determinePosition() async {
   }
 }
 
-
 String? imagepath;
-ImagePicker picker=ImagePicker();
-
+ImagePicker picker = ImagePicker();
 
 String formatTime(String time) {
-
   return time.padLeft(2, '0');
 }
 
-Future<void>pickimage()async{
+Future<void> pickimage() async {
   // 选择图片
-  final openalbum =  await picker.pickImage(source: ImageSource.gallery);
+  final openalbum = await picker.pickImage(source: ImageSource.gallery);
 
-  if(openalbum!=null){
-    imagepath=openalbum.path;
+  if (openalbum != null) {
+    imagepath = openalbum.path;
   }
-
 }
 
-
-
-
 class editorpage extends StatefulWidget {
-  const editorpage({super.key});
+  const editorpage({Key? key, required this.token}) : super(key: key);
+
+  final String token;
 
   @override
-  State<editorpage> createState() => _editorpageState();
+  State<editorpage> createState() => _editorpageState(token: token);
 }
 
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
-
-
-
 class _editorpageState extends State<editorpage> {
   DateTime datetime = DateTime.now();
+  var editor = Editor();
 
+  String token;
 
-
-
+  _editorpageState({required this.token});
 
   @override
   void initState() {
     super.initState();
     textcontroller = TextEditingController();
     textcontroller.addListener(() {});
-
+    print(token);
   }
 
   @override
@@ -141,7 +132,7 @@ class _editorpageState extends State<editorpage> {
         width: double.infinity,
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topCenter,
+                begin: Alignment.center,
                 end: Alignment.bottomCenter,
                 colors: [Colors.white, Color(0xFFEFFCDE)])),
         child: SingleChildScrollView(
@@ -226,7 +217,9 @@ class _editorpageState extends State<editorpage> {
                 style:
                     TextStyle(fontSize: Adapt.pt(12), color: Color(0xFF888888)),
               ),
-              SizedBox(height: Adapt.pt(12),),
+              SizedBox(
+                height: Adapt.pt(12),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
@@ -236,16 +229,18 @@ class _editorpageState extends State<editorpage> {
                   controller: textcontroller,
                   maxLines: 20,
                   minLines: 3,
-                  decoration: InputDecoration(border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(Adapt.pt(20)),
-                    ),borderSide: BorderSide(color:Color(0xFF7B9F4D), ),
-
-                  ),focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF7B9F4D),width: Adapt.pt(1.5))
-                  )
-
-                  ),
-
+                  decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(Adapt.pt(20)),
+                        ),
+                        borderSide: BorderSide(
+                          color: Color(0xFF7B9F4D),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color(0xFF7B9F4D), width: Adapt.pt(1.5)))),
                 ),
               ),
             ],
@@ -263,15 +258,58 @@ class _editorpageState extends State<editorpage> {
                   await _determinePosition();
                 },
                 icon: Icon(Icons.location_on_outlined)),
-            IconButton(onPressed: (){
-              pickimage();
-
-            }, icon: Icon(Icons.terrain)),
-            IconButton(onPressed: (){}, icon: Icon(Icons.mic_none_rounded)),
-            SizedBox(width: Adapt.pt(195),),
-            IconButton(onPressed: (){
-
-            }, icon: Icon(Icons.check)),
+            IconButton(
+                onPressed: () {
+                  pickimage();
+                },
+                icon: Icon(Icons.terrain)),
+            IconButton(onPressed: () {}, icon: Icon(Icons.mic_none_rounded)),
+            SizedBox(
+              width: Adapt.pt(195),
+            ),
+            IconButton(
+                onPressed: () {
+                  if(textcontroller.text.toString()!=null&&textcontroller.text.toString()!=""){
+                    editor.tokenTest(token);
+                    FocusScope.of(context).unfocus();
+                    Navigator.pop(context);
+                  }
+                  else{
+                  showGeneralDialog(
+                      context: context,
+                      pageBuilder: (BuildContext context,
+                          Animation<double> animation,
+                          Animation<double> secondaryAnimation) {
+                        return AlertDialog(
+                          content: Container(
+                              height: Adapt.pt(40),
+                              child: Center(
+                                  child: Text(
+                                "请填写内容૮꒰ ˶• ༝ •˶꒱ა",
+                                style: TextStyle(fontSize: Adapt.pt(20)),
+                              ))),
+                          actions: [
+                            GestureDetector(
+                              onTap: (){
+                                Navigator.of(context).pop();
+                              },
+                              child: Container(
+                                child: Text(
+                                "好的捏",
+                                style: TextStyle(color: Colors.white),
+                                                            ),
+                                decoration: BoxDecoration(
+                                  color:Color(0xFF7B9F4D),
+                                  borderRadius: BorderRadius.all(Radius.circular(Adapt.pt(20)))
+                                ),
+                                padding: EdgeInsets.all(Adapt.pt(10)),
+                              )
+                            )],
+                        );
+                      });
+                  }
+                },
+                icon: Icon(Icons.check)),
           ],
         ),
       ),
@@ -279,24 +317,23 @@ class _editorpageState extends State<editorpage> {
   }
 }
 
+class Editor {
+  Editor();
 
+  var user = Users();
 
-class RegisterFunction{
-  RegisterFunction();
-  var  editor = Editor();
-  Future<void> tokenTest(String token)async {
-    Dio dio =  Dio();
-    String url = "http://172.23.146.5:25565/createJournal";
-    dio.options.baseUrl=url;
-    dio.options.headers['token']=token;
-    Map<String,dynamic> map = Map();
-    map['location']=_determinePosition();
-    map['journalTitle']='aaaaa';
-    map['journalText']='aaaaa';
-    map['topJournal']=0;
-    Response response =  await dio.post(url,data: map);
+  Future<void> tokenTest(String token) async {
+    Dio dio = Dio();
+    String url = "http://8.130.98.175:8080/createJournal";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map['location'] = "1";
+    map['journalTitle'] = 'aaaaa';
+    map['journalText'] = textcontroller.text.toString();
+    map['topJournal'] = 0;
+    Response response = await dio.post(url, data: map);
     print(response);
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
-
   }
 }

@@ -9,41 +9,41 @@ String encryptMd5(String str) {
  return encryptStr;
 }
 
-class AuthInterCeptor extends Interceptor {
-  AuthInterCeptor();
-
-  @override
-  void onRequest(
-      RequestOptions options,
-      RequestInterceptorHandler handler,
-      ) async {
-    // 创建一个终端列表，这些你不需要token
-    final listOfPaths = <String>[
-      '/send-top',
-      '/validate-otp'
-    ];
-    // 检查如果请求端点匹配
-    if (listOfPaths.contains(options.path.toString())) {
-      // 如果端点匹配然后跳到追加令牌
-      return handler.next(options);
-    }
-    // 在这里加载令牌到 header
-    var token = '';
-    options.headers.addAll({'Authorization': token});
-    return handler.next(options);
-  }
-
-  // 你也可以在响应或错误时执行一些动作
-  @override
-  void onResponse(Response response, ResponseInterceptorHandler handler) {
-    return handler.next(response);
-  }
-
-  @override
-  void onError(DioError err, ErrorInterceptorHandler handler) {
-    return handler.next(err);
-  }
-}
+// class AuthInterCeptor extends Interceptor {
+//   AuthInterCeptor();
+//
+//   @override
+//   void onRequest(
+//       RequestOptions options,
+//       RequestInterceptorHandler handler,
+//       ) async {
+//     // 创建一个终端列表，这些你不需要token
+//     final listOfPaths = <String>[
+//       '/send-top',
+//       '/validate-otp'
+//     ];
+//     // 检查如果请求端点匹配
+//     if (listOfPaths.contains(options.path.toString())) {
+//       // 如果端点匹配然后跳到追加令牌
+//       return handler.next(options);
+//     }
+//     // 在这里加载令牌到 header
+//     var token = '';
+//     options.headers.addAll({'Authorization': token});
+//     return handler.next(options);
+//   }
+//
+//   // 你也可以在响应或错误时执行一些动作
+//   @override
+//   void onResponse(Response response, ResponseInterceptorHandler handler) {
+//     return handler.next(response);
+//   }
+//
+//   @override
+//   void onError(DioError err, ErrorInterceptorHandler handler) {
+//     return handler.next(err);
+//   }
+// }
 
 
 class RegisterFunction{
@@ -51,7 +51,7 @@ class RegisterFunction{
 var  user = Users();
 Future<void> tokenTest(String token)async {
     Dio dio =  Dio();
-    String url = "http://172.23.146.5:25565/createJournal";
+    String url = "http://8.130.98.175:8080/createJournal";
     dio.options.baseUrl=url;
     dio.options.headers['token']=token;
    Map<String,dynamic> map = Map();
@@ -67,7 +67,7 @@ Future<void> tokenTest(String token)async {
 
 
  Future <void> postFunctionR(String username,String password) async{
-    String url = "http://172.23.146.5:25565/register";
+    String url = "http://8.130.98.175:8080/register";
     Dio dio =  Dio();
     dio.options.baseUrl=url;
     dio.options.headers.addAll({'token':user.data?.token});
@@ -81,8 +81,9 @@ Future<void> tokenTest(String token)async {
   print(user.code);
   }
 }
+
 Future<String> GetFuction() async{
-    String url = "http://172.23.146.5:25565/userAgreement";
+    String url = "http://8.130.98.175:8080/userAgreement";
     Dio dio = new Dio();
     dio.options.baseUrl=url;
     Response response = await dio.get(url);

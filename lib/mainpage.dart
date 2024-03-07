@@ -63,10 +63,12 @@ Future _determinePosition() async {
 
 
 class mainpage extends StatefulWidget {
-  const mainpage({super.key});
+  const mainpage({Key? key, required this.token}) : super(key: key);
+
+  final String token;
 
   @override
-  State<mainpage> createState() => _mainpageState();
+  State<mainpage> createState() => _mainpageState(token:token);
 }
 
 int _month = dateTime.month;
@@ -77,6 +79,11 @@ var firstDayOfMonth = DateTime(_year, _month, 1);
 var lastDayOfMonth = DateTime(_year, _month + 1, 0);
 
 class _mainpageState extends State<mainpage> {
+
+  String token;
+
+  _mainpageState({required this.token});
+
   ScrollController _controllerbottom = ScrollController();
 
   PageController _pagecontroller = PageController(initialPage: 0);
@@ -87,6 +94,7 @@ class _mainpageState extends State<mainpage> {
   Color icon4Color = Color(0xFF445B28);
 
   void changeColor(int iconNumber) {
+    print(token);
     setState(() {
       if (iconNumber == 1) {
         icon1Color = Color(0xFF7B9F4D); // Change to your desired color
@@ -523,7 +531,7 @@ class _mainpageState extends State<mainpage> {
               FloatingActionButton(
                 onPressed: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => editorpage()));
+                      MaterialPageRoute(builder: (context) => editorpage(token: token,)));
                 },
                 elevation: 0,
                 backgroundColor: Color(0xFF7B9F4D),

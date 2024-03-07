@@ -59,7 +59,7 @@ class _changepageState extends State<changepage> {
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topCenter,
+                begin: Alignment.center,
                 end: Alignment.bottomCenter,
                 colors: [Colors.white,Color(0xFFEFFCDE)]
             )

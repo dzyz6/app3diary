@@ -146,10 +146,10 @@ class RInterfaceText extends StatelessWidget {
                await register.postFunctionR(
                     _controllerId.text, _controllerS.text);
                 if ( register.user.code == 200) {
-                  register.tokenTest(register.user.data!.token!);
+
                  Navigator.push(context,
-                     MaterialPageRoute(builder: (context) => mainpage()));
-                } 
+                     MaterialPageRoute(builder: (context) => mainpage(token:register.user.data!.token!)));
+                }
                 else {
                   String? text = register.user.message;
                  showMessage(context,text!);
