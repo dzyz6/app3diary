@@ -11,13 +11,40 @@ import 'package:flutter_pickers/style/picker_style.dart';
 import 'package:flutter_pickers/time_picker/model/date_mode.dart';
 import 'package:flutter_pickers/time_picker/model/pduration.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'package:dio/dio.dart';
+import 'dioclass.dart';
 
 var colororigin = Color(0xFF445B28);
 var colorclick = Color(0xFFDCEEC4);
 
 //获取时间
 DateTime dateTime = DateTime.now();
+
+
+Widget getItem(int index){
+  return ListTile(
+
+  );
+}
+
+
+class Getfromurl{
+  Future<void> createlist(String token) async {
+    Dio dio = Dio();
+    String url = "http://8.130.98.175:8080/createJournal";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map['location'] = "1";
+    map['journalTitle'] = 'aaaaa';
+    map['journalText'] = textcontroller.text.toString();
+    map['topJournal'] = 0;
+    Response response = await dio.post(url, data: map);
+    print(response);
+    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+  }
+}
+
 
 /// 位置服务
 Future _determinePosition() async {
@@ -480,6 +507,11 @@ class _mainpageState extends State<mainpage> {
                     ),
                   ),
                 ),
+                ListView(
+                  children: List.generate(100, (index) {
+                    return getItem(index);
+                  }),
+                )
               ],
             ),
           ),
