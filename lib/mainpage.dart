@@ -363,7 +363,7 @@ class _mainpageState extends State<mainpage> {
 
               Diarychuan(),
 
-              person(),
+              Person(),
 
             ],
 

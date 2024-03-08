@@ -163,16 +163,16 @@ class _InterfaceTextState extends State<InterfaceText> {
                       fontSize: Adapt.pt(25)),
                 ),
                 onPressed: () async {
-                  await login.postFunctionR(
-                      _controllerId.text, _controllerS.text);
-                  if (login.user.code == 200) {
+          //        await login.postFunctionR(
+             //         _controllerId.text, _controllerS.text);
+                //  if (login.user.code == 200) {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (con) => mainpage()));
-                  } else {
-                    setState(() {
-                      visible = true;
-                    });
-                  }
+                        MaterialPageRoute(builder: (context) => mainpage()));
+               //   } else {
+                 //   setState(() {
+                 //     visible = true;
+                //    });
+               //   }
                 },
                 style: ButtonStyle(
                     fixedSize: MaterialStateProperty.all(
