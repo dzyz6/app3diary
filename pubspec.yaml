@@ -31,7 +31,6 @@ dependencies:
   dio: ^5.4.1
   flutter:
     sdk: flutter
-  image_picker: ^0.8.4+4
   flutter_pickers: ^2.1.9
   geolocator: ^10.1.0
   crypto: ^3.0.3

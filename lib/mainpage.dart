@@ -179,10 +179,12 @@ Future _determinePosition() async {
 }
 
 class mainpage extends StatefulWidget {
-  const mainpage({super.key});
+  const mainpage({Key? key, required this.token}) : super(key: key);
+
+  final String token;
 
   @override
-  State<mainpage> createState() => _mainpageState();
+  State<mainpage> createState() => _mainpageState(token:token);
 }
 
 int _month = dateTime.month;
@@ -190,6 +192,12 @@ int _month = dateTime.month;
 int _year = dateTime.year;
 
 class _mainpageState extends State<mainpage> {
+
+
+  String token;
+
+  _mainpageState({required this.token});
+
   ScrollController _controllerbottom = ScrollController();
 
   PageController _pagecontroller = PageController(initialPage: 0);
@@ -230,8 +238,8 @@ class _mainpageState extends State<mainpage> {
   }
 
   int nowpage = 0;
-  final firstDayOfMonth = DateTime(_year, _month, 1);
-  final lastDayOfMonth = DateTime(_year, _month + 1, 0);
+  var firstDayOfMonth = DateTime(_year, _month, 1);
+  var lastDayOfMonth = DateTime(_year, _month + 1, 0);
 
   List<bool> _itemStatuses = List.generate(42, (_) => false);
 
@@ -619,7 +627,7 @@ class _mainpageState extends State<mainpage> {
           ),
           diarypage(),
           Diarychuan(),
-          person(),
+          Person(),
         ],
       ),
       bottomNavigationBar: ClipRRect(
