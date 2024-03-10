@@ -78,6 +78,7 @@ class _searchpageState extends State<searchpage> {
                 color: Color(0xFF445B28),
               ),
               onPressed: () {
+                FocusScope.of(context).unfocus();
                 Navigator.pop(context);
               },
             ),

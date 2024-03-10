@@ -11,7 +11,7 @@ class diarypage extends StatefulWidget {
 }
 
 class _diarypageState extends State<diarypage> {
-  String _image="lib/assets/images/rabbit1.jpg";
+  String _image="lib/assets/images/rabbit8.jpg";
 
   @override
   Widget build(BuildContext context) {

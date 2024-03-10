@@ -1,4 +1,3 @@
-
 import 'package:diary/backgroundpage.dart';
 import 'package:flutter/material.dart';
 import 'sizecontrol.dart';

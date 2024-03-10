@@ -109,7 +109,7 @@ class _editorpageState extends State<editorpage> {
               width: Adapt.pt(95),
             ),
             Text(
-              "编辑日记",
+              "新建日记",
               style: TextStyle(color: Colors.white),
             ),
           ],
@@ -118,7 +118,7 @@ class _editorpageState extends State<editorpage> {
         automaticallyImplyLeading: false,
         leading: IconButton(
           onPressed: () {
-            Future.delayed(Duration(milliseconds: 300));
+            FocusScope.of(context).unfocus();
             Navigator.pop(context);
           },
           icon: Icon(

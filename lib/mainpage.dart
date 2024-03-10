@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';
@@ -17,41 +19,127 @@ import 'dioclass.dart';
 var colororigin = Color(0xFF445B28);
 var colorclick = Color(0xFFDCEEC4);
 
+List a = ["一", "二", "三", "四", "五", "六", "天"];
+
+
+var inside=_geturl._get.data?.records[0].journalText;
+
 //获取时间
 DateTime dateTime = DateTime.now();
 
+Widget getItem(int index) {
+  return GestureDetector(
+    onTap: (){
 
-Widget getItem(int index){
-  return ListTile(
+    },
+    child: Column(
+      children: [
+        Container(
+          height: Adapt.pt(79),
+          child:
+             Row(
+               mainAxisAlignment: MainAxisAlignment.start,
+               children: [
+                 SizedBox(width: Adapt.pt(20),),
+                 Column(
 
+                  children: [
+                    SizedBox(
+                      height: Adapt.pt(15),
+                    ),
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: "$nowday",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(25), color: Colors.black)),
+                        TextSpan(
+                          text: "$_month",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(15), color: Colors.black)
+                        ),
+                        TextSpan(
+                            text: "月",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(13), color: Colors.black)
+                        ),
+
+                      ]),
+                    ),
+
+                    RichText(text: TextSpan(
+                      children:[
+                        TextSpan(
+                          text: "星期",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(12), color: Colors.black)
+                        ),
+                        TextSpan(
+                          text: a[DateTime(_year,_month,nowday).weekday-1],
+                          style: TextStyle(
+                              fontSize: Adapt.pt(12), color: Colors.black),
+                        ),
+                      ]
+                    )),
+
+                  ],
+
+
+                             ),
+                 RichText(text: TextSpan(children:[
+                   TextSpan(
+                     text: "$inside",style: TextStyle(
+                       fontSize: Adapt.pt(12), color: Colors.black),
+                   )
+                 ]))
+               ],
+             ),
+
+        ),
+        Divider(
+          height: Adapt.pt(1),
+          color: Color(0xFFE3E3E3),
+        )
+      ],
+    ),
   );
 }
 
+int nowday = dateTime.day;
 
-class Getfromurl{
+class Getfromurl {
+  var _get = Get();
+
   Future<void> createlist(String token) async {
+
     Dio dio = Dio();
-    String url = "http://8.130.98.175:8080/createJournal";
+    String url = "http://8.130.98.175:8080/getJournalsByUid";
     dio.options.baseUrl = url;
     dio.options.headers['token'] = token;
     Map<String, dynamic> map = Map();
-    map['location'] = "1";
-    map['journalTitle'] = 'aaaaa';
-    map['journalText'] = textcontroller.text.toString();
-    map['topJournal'] = 0;
-    Response response = await dio.post(url, data: map);
-    print(response);
+    map['page'] = 1;
+    map['pageSize'] = 5;
+    map['journalTitle'] = "";
+    map['range'] = 0;
+    map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
+    Response response = await dio.get(url, queryParameters: map);
+    _get=Get.fromJson(response.data);
+    inside=_get.data?.records[1].journalText;
+    print(_get.data?.records[0].journalText);
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+    print("$_year" + "-" + "$_month" + "-" + "$nowday");
   }
 }
 
+
+var _geturl=Getfromurl();
 
 /// 位置服务
 Future _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
-  double longitude=0;
-  double latitude=0;
+  double longitude = 0;
+  double latitude = 0;
   try {
     /// 手机GPS服务是否已启用。
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -63,13 +151,15 @@ Future _determinePosition() async {
         return;
       }
     }
+
     /// 是否允许app访问地理位置
     permission = await Geolocator.checkPermission();
 
     if (permission == LocationPermission.denied) {
       /// 之前访问设备位置的权限被拒绝，重新申请权限
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
         /// 再次被拒绝。根据Android指南，你的应用现在应该显示一个解释性UI。
         return;
       }
@@ -78,6 +168,7 @@ Future _determinePosition() async {
       await Geolocator.openAppSettings();
       return;
     }
+
     /// 允许访问地理位置，获取地理位置
     Position position = await Geolocator.getCurrentPosition();
     longitude = position.longitude;
@@ -87,15 +178,13 @@ Future _determinePosition() async {
   }
 }
 
-
-
 class mainpage extends StatefulWidget {
   const mainpage({Key? key, required this.token}) : super(key: key);
 
   final String token;
 
   @override
-  State<mainpage> createState() => _mainpageState(token:token);
+  State<mainpage> createState() => _mainpageState(token: token);
 }
 
 int _month = dateTime.month;
@@ -106,7 +195,6 @@ var firstDayOfMonth = DateTime(_year, _month, 1);
 var lastDayOfMonth = DateTime(_year, _month + 1, 0);
 
 class _mainpageState extends State<mainpage> {
-
   String token;
 
   _mainpageState({required this.token});
@@ -121,8 +209,7 @@ class _mainpageState extends State<mainpage> {
   Color icon4Color = Color(0xFF445B28);
 
   void changeColor(int iconNumber) {
-    print(token);
-    setState(() {
+
       if (iconNumber == 1) {
         icon1Color = Color(0xFF7B9F4D); // Change to your desired color
         // Reset other icons' colors if needed
@@ -148,11 +235,10 @@ class _mainpageState extends State<mainpage> {
         icon2Color = Color(0xFF445B28);
         icon3Color = Color(0xFF445B28);
       }
-    });
+    ;
   }
 
   int nowpage = 0;
-
 
   List<bool> _itemStatuses = List.generate(42, (_) => false);
 
@@ -167,8 +253,10 @@ class _mainpageState extends State<mainpage> {
   @override
   void initState() {
     super.initState();
-    if(_month==dateTime.month&&_year==dateTime.year)
-    {_toggleItemStatus(dateTime.day + firstDayOfMonth.weekday-1);};
+    if (_month == dateTime.month && _year == dateTime.year) {
+      _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
+    }
+    ;
   }
 
   @override
@@ -184,49 +272,45 @@ class _mainpageState extends State<mainpage> {
               title: GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () {
-                    Pickers.showDatePicker(
-                        context,
-                      pickerStyle: PickerStyle(
-                        textColor: Color(0xFF445B28),
-                        cancelButton: Container(
-                          margin: EdgeInsets.only(left:Adapt.pt(20)),
-                          child: Text("取消",style: TextStyle(
-                            fontSize: Adapt.pt(18),
-                            color: Colors.black
-
-                          ),),
-                        ),
-                        commitButton: Container(
-                          margin: EdgeInsets.only(right: Adapt.pt(20)),
-                          child: Text("确定",style: TextStyle(
-                            fontSize: Adapt.pt(18),
-                            color:Color(0xFF7B9F4D),
-
-                          ),),
-                        ),
-                        textSize: Adapt.pt(25),
-                        pickerTitleHeight: Adapt.pt(40),
-                        pickerItemHeight: Adapt.pt(60),
-                        headDecoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(topRight: Radius.circular(Adapt.pt(20)),topLeft: Radius.circular(Adapt.pt(20))),
-                          color: Colors.white
-                        )
-
-                      ),
-                      mode: DateMode.YM,
-                      onConfirm: (p){
-                          setState(() {
-                            _month=p.month as int;
-                            _year=p.year as int;
-                            firstDayOfMonth = DateTime(_year, _month, 1);
-                            lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                            _itemStatuses = List.generate(42, (_) => false);
-
-                          });
-
-                      }
-                    );
-
+                    Pickers.showDatePicker(context,
+                        pickerStyle: PickerStyle(
+                            textColor: Color(0xFF445B28),
+                            cancelButton: Container(
+                              margin: EdgeInsets.only(left: Adapt.pt(20)),
+                              child: Text(
+                                "取消",
+                                style: TextStyle(
+                                    fontSize: Adapt.pt(18),
+                                    color: Colors.black),
+                              ),
+                            ),
+                            commitButton: Container(
+                              margin: EdgeInsets.only(right: Adapt.pt(20)),
+                              child: Text(
+                                "确定",
+                                style: TextStyle(
+                                  fontSize: Adapt.pt(18),
+                                  color: Color(0xFF7B9F4D),
+                                ),
+                              ),
+                            ),
+                            textSize: Adapt.pt(25),
+                            pickerTitleHeight: Adapt.pt(40),
+                            pickerItemHeight: Adapt.pt(60),
+                            headDecoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(Adapt.pt(20)),
+                                    topLeft: Radius.circular(Adapt.pt(20))),
+                                color: Colors.white)),
+                        mode: DateMode.YM, onConfirm: (p) {
+                      setState(() {
+                        _month = p.month as int;
+                        _year = p.year as int;
+                        firstDayOfMonth = DateTime(_year, _month, 1);
+                        lastDayOfMonth = DateTime(_year, _month + 1, 0);
+                        _itemStatuses = List.generate(42, (_) => false);
+                      });
+                    });
                   },
                   child: RichText(
                     text: TextSpan(
@@ -286,9 +370,8 @@ class _mainpageState extends State<mainpage> {
 
                 //定位
                 IconButton(
-                  onPressed: () async{
+                  onPressed: () async {
                     await _determinePosition();
-
                   },
                   icon: Icon(
                     Icons.location_on_outlined,
@@ -311,12 +394,12 @@ class _mainpageState extends State<mainpage> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          _month=dateTime.month;
-                          _year=dateTime.year;
+                          _month = dateTime.month;
+                          _year = dateTime.year;
                           firstDayOfMonth = DateTime(_year, _month, 1);
                           lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                          _toggleItemStatus(dateTime.day + 3);
-
+                          _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
+                          nowday=dateTime.day;
                         });
                       },
                       child: Container(
@@ -364,7 +447,9 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "日",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
+                          color: Color(0xFFA7A7A7),
+                          fontSize: Adapt.pt(22),
+                          fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -372,7 +457,9 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "一",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
+                          color: Color(0xFFA7A7A7),
+                          fontSize: Adapt.pt(22),
+                          fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -380,7 +467,9 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "二",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
+                          color: Color(0xFFA7A7A7),
+                          fontSize: Adapt.pt(22),
+                          fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -388,7 +477,9 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "三",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
+                          color: Color(0xFFA7A7A7),
+                          fontSize: Adapt.pt(22),
+                          fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -396,7 +487,9 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "四",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
+                          color: Color(0xFFA7A7A7),
+                          fontSize: Adapt.pt(22),
+                          fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -404,7 +497,9 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "五",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
+                          color: Color(0xFFA7A7A7),
+                          fontSize: Adapt.pt(22),
+                          fontWeight: FontWeight.w500),
                     ),
                     SizedBox(
                       width: Adapt.pt(35),
@@ -412,7 +507,9 @@ class _mainpageState extends State<mainpage> {
                     Text(
                       "六",
                       style: TextStyle(
-                          color: Color(0xFFA7A7A7), fontSize: Adapt.pt(22),fontWeight: FontWeight.w500),
+                          color: Color(0xFFA7A7A7),
+                          fontSize: Adapt.pt(22),
+                          fontWeight: FontWeight.w500),
                     ),
                   ],
                 ),
@@ -432,11 +529,11 @@ class _mainpageState extends State<mainpage> {
                       var firstDayOfWeek = firstDayOfMonth.weekday;
                       int daysUntilFirstMonday = 1;
                       if (firstDayOfWeek != 1) {
-                        if(firstDayOfWeek==7){
-                          daysUntilFirstMonday = firstDayOfWeek-7;
+                        if (firstDayOfWeek == 7) {
+                          daysUntilFirstMonday = firstDayOfWeek - 7;
+                        } else {
+                          daysUntilFirstMonday = firstDayOfWeek;
                         }
-                        else{
-                        daysUntilFirstMonday = firstDayOfWeek;}
                       }
 
                       var day1 = firstDayOfMonth
@@ -473,6 +570,8 @@ class _mainpageState extends State<mainpage> {
                         onTap: () {
                           setState(() {
                             _toggleItemStatus(index);
+                            nowday = day1;
+                            _geturl.createlist(token);
                           });
                         },
                         child: Container(
@@ -507,21 +606,27 @@ class _mainpageState extends State<mainpage> {
                     ),
                   ),
                 ),
-                ListView(
-                  children: List.generate(100, (index) {
-                    return getItem(index);
-                  }),
+                SizedBox(
+                  height: Adapt.pt(10),
+                ),
+                Divider(
+                  height: Adapt.pt(2),
+                  color: Color(0xFFE3E3E3),
+                ),
+                Expanded(
+                  child: ListView.builder(
+
+                      itemExtent: Adapt.pt(80),
+                      itemBuilder: (BuildContext context, int index) {
+                        return getItem(index);
+                      }),
                 )
               ],
             ),
           ),
-
           diarypage(),
-
           Diarychuan(),
-
           person(),
-
         ],
       ),
       bottomNavigationBar: ClipRRect(
@@ -562,8 +667,12 @@ class _mainpageState extends State<mainpage> {
               //添加
               FloatingActionButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => editorpage(token: token,)));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => editorpage(
+                                token: token,
+                              )));
                 },
                 elevation: 0,
                 backgroundColor: Color(0xFF7B9F4D),
@@ -608,3 +717,5 @@ class _mainpageState extends State<mainpage> {
     );
   }
 }
+
+
