@@ -36,6 +36,7 @@ class InterfaceText extends StatefulWidget {
 
 class _InterfaceTextState extends State<InterfaceText> {
   var login = LoginFunction();
+  late var con=login.user.data;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(

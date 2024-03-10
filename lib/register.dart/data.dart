@@ -81,7 +81,6 @@ Future<void> tokenTest(String token)async {
   print(user.code);
   }
 }
-
 Future<String> GetFuction() async{
     String url = "http://8.130.98.175:8080/userAgreement";
     Dio dio = new Dio();

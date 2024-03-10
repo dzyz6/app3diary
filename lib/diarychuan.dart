@@ -1,9 +1,7 @@
 import 'dart:ui';
-
 import 'package:diary/register.dart/data.dart';
 import 'package:flutter/material.dart';
 import './sizecontrol.dart';
-
 var image1 = 'lib/assets/images/rabbit1.jpg';
 var image2 = 'lib/assets/images/rabbit2.jpg';
 
@@ -164,22 +162,16 @@ class DiaryLine extends StatefulWidget {
 }
   
   
-GlobalKey _TimeKey = GlobalKey();
-Offset _getPosition() {
-    final RenderBox renderBox = _TimeKey.currentContext?.findRenderObject() as RenderBox;
-    final positionTime = renderBox.localToGlobal(Offset.zero);    
-    print("红色区域位置: $positionTime ");
 
-    return positionTime;
-  }
 class _DiaryLineState extends State<DiaryLine> {
   @override
 
   Widget build(BuildContext context) {
     return Container(
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TimeData(key: _TimeKey,),
+          TimeData(),
           Expanded(
             child: Container(
               margin: EdgeInsets.only(top: 20),
@@ -254,14 +246,28 @@ class ChuanLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      foregroundPainter: CirclePainter(),
-      child: DiaryLine(),
+    return ListView(
+      children: [
+        CustomPaint(
+          foregroundPainter: CirclePainter(),
+          child: DiaryLine(),
+        ),
+         CustomPaint(
+          foregroundPainter: CirclePainter(),
+          child: DiaryLine(),
+        ), CustomPaint(
+          foregroundPainter: CirclePainter(),
+          child: DiaryLine(),
+        ), CustomPaint(
+          foregroundPainter: CirclePainter(),
+          child: DiaryLine(),
+        ),
+      ],
     );
   }
 }
 
-List painterdata = [300,100,20];
+List painterdata = [300];
 
 class CirclePainter extends CustomPainter {  
 Rect stretch(Rect f,int df)
@@ -290,7 +296,7 @@ for (var element in painterdata) {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
 
 
@@ -357,8 +363,7 @@ class _Diarychuan2State extends State<Diarychuan2> {
           ),
         ],
         backgroundColor: Color(0xFF7B9F4D),),
-      body: ChuanLine(),
-    
+      body: ChuanLine(),    
     );
   }
 }
