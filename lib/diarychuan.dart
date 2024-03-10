@@ -363,8 +363,7 @@ class _Diarychuan2State extends State<Diarychuan2> {
           ),
         ],
         backgroundColor: Color(0xFF7B9F4D),),
-      body: ChuanLine(),
-    
+      body: ChuanLine(),    
     );
   }
 }

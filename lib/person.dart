@@ -463,7 +463,7 @@ _ChangeNameDialog(BuildContext context) async {
             content: Container( 
               decoration: BoxDecoration(
 
-              color:const Color(0xffEAEAEA),
+              color:const Color(0xFFEAEAEA),
                 borderRadius: BorderRadius.circular(30),),
               alignment: Alignment.center,
               height: 30,
