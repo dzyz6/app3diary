@@ -4,6 +4,7 @@ import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';
 import 'package:diary/editorpage.dart';
+import 'package:diary/kanpage.dart';
 import 'package:diary/person.dart';
 import 'package:diary/searchpage.dart';
 import 'package:diary/sizecontrol.dart';
@@ -21,121 +22,16 @@ var colorclick = Color(0xFFDCEEC4);
 
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
-
-var inside=_geturl._get.data?.records[0].journalText;
-
+int total = 0;
+late String inside;
 //获取时间
 DateTime dateTime = DateTime.now();
 
-Widget getItem(int index) {
-  return GestureDetector(
-    onTap: (){
-
-    },
-    child: Column(
-      children: [
-        Container(
-          height: Adapt.pt(79),
-          child:
-             Row(
-               mainAxisAlignment: MainAxisAlignment.start,
-               children: [
-                 SizedBox(width: Adapt.pt(20),),
-                 Column(
-
-                  children: [
-                    SizedBox(
-                      height: Adapt.pt(15),
-                    ),
-                    RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: "$nowday",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(25), color: Colors.black)),
-                        TextSpan(
-                          text: "$_month",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(15), color: Colors.black)
-                        ),
-                        TextSpan(
-                            text: "月",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(13), color: Colors.black)
-                        ),
-
-                      ]),
-                    ),
-
-                    RichText(text: TextSpan(
-                      children:[
-                        TextSpan(
-                          text: "星期",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(12), color: Colors.black)
-                        ),
-                        TextSpan(
-                          text: a[DateTime(_year,_month,nowday).weekday-1],
-                          style: TextStyle(
-                              fontSize: Adapt.pt(12), color: Colors.black),
-                        ),
-                      ]
-                    )),
-
-                  ],
-
-
-                             ),
-                 RichText(text: TextSpan(children:[
-                   TextSpan(
-                     text: "$inside",style: TextStyle(
-                       fontSize: Adapt.pt(12), color: Colors.black),
-                   )
-                 ]))
-               ],
-             ),
-
-        ),
-        Divider(
-          height: Adapt.pt(1),
-          color: Color(0xFFE3E3E3),
-        )
-      ],
-    ),
-  );
-}
-
 int nowday = dateTime.day;
-
-class Getfromurl {
-  var _get = Get();
-
-  Future<void> createlist(String token) async {
-
-    Dio dio = Dio();
-    String url = "http://8.130.98.175:8080/getJournalsByUid";
-    dio.options.baseUrl = url;
-    dio.options.headers['token'] = token;
-    Map<String, dynamic> map = Map();
-    map['page'] = 1;
-    map['pageSize'] = 5;
-    map['journalTitle'] = "";
-    map['range'] = 0;
-    map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
-    Response response = await dio.get(url, queryParameters: map);
-    _get=Get.fromJson(response.data);
-    inside=_get.data?.records[1].journalText;
-    print(_get.data?.records[0].journalText);
-    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
-    print("$_year" + "-" + "$_month" + "-" + "$nowday");
-  }
-}
-
-
-var _geturl=Getfromurl();
 
 /// 位置服务
 Future _determinePosition() async {
+
   bool serviceEnabled;
   LocationPermission permission;
   double longitude = 0;
@@ -173,6 +69,7 @@ Future _determinePosition() async {
     Position position = await Geolocator.getCurrentPosition();
     longitude = position.longitude;
     latitude = position.latitude;
+
   } catch (e) {
     print(e);
   }
@@ -184,7 +81,7 @@ class mainpage extends StatefulWidget {
   final String token;
 
   @override
-  State<mainpage> createState() => _mainpageState(token:token);
+  State<mainpage> createState() => _mainpageState(token: token);
 }
 
 int _month = dateTime.month;
@@ -192,7 +89,40 @@ int _month = dateTime.month;
 int _year = dateTime.year;
 
 class _mainpageState extends State<mainpage> {
+  var _get = Get();
+  Dio dio = Dio();
+  String? inside;
 
+  Future<void> createlist(String token) async {
+    String url = "http://8.130.98.175/getJournalsByUid";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map['page'] = 1;
+    map['pageSize'] = 100;
+    map['journalTitle'] = "";
+    map['range'] = 0;
+    map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
+    Response response = await dio.get(url, queryParameters: map);
+    _get = Get.fromJson(response.data);
+
+    setState(() {
+      if (_get != null &&
+          _get.data != null &&
+          _get.data!.records.isNotEmpty &&
+          _get.data?.total != 0) {
+        total = _get.data!.total;
+      } else {
+        total = 0;
+        inside = "";
+      }
+    });
+
+    print(inside);
+    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+    print(total);
+    print("$_year" + "-" + "$_month" + "-" + "$nowday");
+  }
 
   String token;
 
@@ -208,32 +138,31 @@ class _mainpageState extends State<mainpage> {
   Color icon4Color = Color(0xFF445B28);
 
   void changeColor(int iconNumber) {
-
-      if (iconNumber == 1) {
-        icon1Color = Color(0xFF7B9F4D); // Change to your desired color
-        // Reset other icons' colors if needed
-        icon2Color = Color(0xFF445B28);
-        icon3Color = Color(0xFF445B28);
-        icon4Color = Color(0xFF445B28);
-      } else if (iconNumber == 2) {
-        icon2Color = Color(0xFF7B9F4D); // Change to your desired color
-        // Reset other icons' colors if needed
-        icon1Color = Color(0xFF445B28);
-        icon3Color = Color(0xFF445B28);
-        icon4Color = Color(0xFF445B28);
-      } else if (iconNumber == 3) {
-        icon3Color = Color(0xFF7B9F4D); // Change to your desired color
-        // Reset other icons' colors if needed
-        icon1Color = Color(0xFF445B28);
-        icon2Color = Color(0xFF445B28);
-        icon4Color = Color(0xFF445B28);
-      } else if (iconNumber == 4) {
-        icon4Color = Color(0xFF7B9F4D); // Change to your desired color
-        // Reset other icons' colors if needed
-        icon1Color = Color(0xFF445B28);
-        icon2Color = Color(0xFF445B28);
-        icon3Color = Color(0xFF445B28);
-      }
+    if (iconNumber == 1) {
+      icon1Color = Color(0xFF7B9F4D); // Change to your desired color
+      // Reset other icons' colors if needed
+      icon2Color = Color(0xFF445B28);
+      icon3Color = Color(0xFF445B28);
+      icon4Color = Color(0xFF445B28);
+    } else if (iconNumber == 2) {
+      icon2Color = Color(0xFF7B9F4D); // Change to your desired color
+      // Reset other icons' colors if needed
+      icon1Color = Color(0xFF445B28);
+      icon3Color = Color(0xFF445B28);
+      icon4Color = Color(0xFF445B28);
+    } else if (iconNumber == 3) {
+      icon3Color = Color(0xFF7B9F4D); // Change to your desired color
+      // Reset other icons' colors if needed
+      icon1Color = Color(0xFF445B28);
+      icon2Color = Color(0xFF445B28);
+      icon4Color = Color(0xFF445B28);
+    } else if (iconNumber == 4) {
+      icon4Color = Color(0xFF7B9F4D); // Change to your desired color
+      // Reset other icons' colors if needed
+      icon1Color = Color(0xFF445B28);
+      icon2Color = Color(0xFF445B28);
+      icon3Color = Color(0xFF445B28);
+    }
     ;
   }
 
@@ -258,6 +187,7 @@ class _mainpageState extends State<mainpage> {
       _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
     }
     ;
+    createlist(token);
   }
 
   @override
@@ -399,8 +329,10 @@ class _mainpageState extends State<mainpage> {
                           _year = dateTime.year;
                           firstDayOfMonth = DateTime(_year, _month, 1);
                           lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                          _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
-                          nowday=dateTime.day;
+                          _toggleItemStatus(
+                              dateTime.day + firstDayOfMonth.weekday - 1);
+                          nowday = dateTime.day;
+                          createlist(token);
                         });
                       },
                       child: Container(
@@ -572,7 +504,7 @@ class _mainpageState extends State<mainpage> {
                           setState(() {
                             _toggleItemStatus(index);
                             nowday = day1;
-                            _geturl.createlist(token);
+                            createlist(token);
                           });
                         },
                         child: Container(
@@ -616,10 +548,113 @@ class _mainpageState extends State<mainpage> {
                 ),
                 Expanded(
                   child: ListView.builder(
-
+                      itemCount: total,
                       itemExtent: Adapt.pt(80),
                       itemBuilder: (BuildContext context, int index) {
-                        return getItem(index);
+                        inside = _get.data!.records[index].journalText;
+                        var time = _get.data!.records[index].createdAt;
+                        var creattime = time.substring(12, 14);
+                        var creattime2 = time.substring(15, 17);
+                        return GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Kanpage(token:token,month: _month,year: _year,nowday: nowday,)));
+                          },
+                          child: Column(
+                            children: [
+                              Container(
+                                height: Adapt.pt(79),
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: Adapt.pt(20),
+                                    ),
+                                    Column(
+                                      children: [
+                                        SizedBox(
+                                          height: Adapt.pt(15),
+                                        ),
+                                        RichText(
+                                          text: TextSpan(children: [
+                                            TextSpan(
+                                                text: "$nowday",
+                                                style: TextStyle(
+                                                    fontSize: Adapt.pt(25),
+                                                    color: Colors.black)),
+                                            TextSpan(
+                                                text: "$_month",
+                                                style: TextStyle(
+                                                    fontSize: Adapt.pt(15),
+                                                    color: Colors.black)),
+                                            TextSpan(
+                                                text: "月",
+                                                style: TextStyle(
+                                                    fontSize: Adapt.pt(13),
+                                                    color: Colors.black)),
+                                          ]),
+                                        ),
+                                        RichText(
+                                            text: TextSpan(children: [
+                                          TextSpan(
+                                              text: "星期",
+                                              style: TextStyle(
+                                                  fontSize: Adapt.pt(12),
+                                                  color: Colors.black)),
+                                          TextSpan(
+                                            text: a[
+                                                DateTime(_year, _month, nowday)
+                                                        .weekday -
+                                                    1],
+                                            style: TextStyle(
+                                                fontSize: Adapt.pt(12),
+                                                color: Colors.black),
+                                          ),
+                                        ])),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: Adapt.pt(20),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "$inside",
+                                            style: TextStyle(
+                                              fontSize: Adapt.pt(15),
+                                              color: Colors.black,
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                          Text(
+                                            "$creattime" + ":" + "$creattime2",
+                                            style: TextStyle(
+                                                fontSize: Adapt.pt(8),
+                                                color: Color(0xff6b6b6b)),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Divider(
+                                height: Adapt.pt(1),
+                                color: Color(0xFFE3E3E3),
+                              )
+                            ],
+                          ),
+                        );
+                        ;
                       }),
                 )
               ],

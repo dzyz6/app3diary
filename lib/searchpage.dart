@@ -24,6 +24,7 @@ class _searchpageState extends State<searchpage> {
             style: TextStyle(fontSize: Adapt.pt(13), ),
             controller: _textcirl,
             decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search_outlined,color: Color(0xFF939393),),
                 fillColor: Color(0xFFD5D5D5),
                 filled: true,
 
@@ -79,6 +80,7 @@ class _searchpageState extends State<searchpage> {
               ),
               onPressed: () {
                 FocusScope.of(context).unfocus();
+                Duration(milliseconds: 300);
                 Navigator.pop(context);
               },
             ),
@@ -88,6 +90,9 @@ class _searchpageState extends State<searchpage> {
           Padding(
             padding: EdgeInsets.only(right: Adapt.pt(20)),
             child: GestureDetector(
+              onTap: (){
+
+              },
               child: Text("搜索",style: TextStyle(fontSize: Adapt.pt(15),color: Color(0xFF7B9F4D)),),
             ),
           )

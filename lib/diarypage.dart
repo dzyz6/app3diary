@@ -10,8 +10,12 @@ class diarypage extends StatefulWidget {
   State<diarypage> createState() => _diarypageState();
 }
 
+List a = ["一", "二", "三", "四", "五", "六", "天"];
+int total=0;
+
 class _diarypageState extends State<diarypage> {
   String _image="lib/assets/images/rabbit8.jpg";
+
 
   @override
   Widget build(BuildContext context) {
