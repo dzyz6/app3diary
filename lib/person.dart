@@ -1,19 +1,48 @@
 import 'package:diary/diarychuan.dart';
+import 'package:diary/login.dart/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import './persondio.dart';
 import 'sizecontrol.dart';
-
+ 
+ 
+ var usermessage = UserMessage();
+  var id;
+  var nickname;
+  var profilePath;
 class Person extends StatefulWidget {
-  const Person({super.key});
+ final String token;
+   Person({Key? key, this.token = 'nulls'}) : super(key: key);
 
   @override
   State<Person> createState() => _PersonState();
 }
 
 class _PersonState extends State<Person> {
+  var diaryNum;
+  var textNum;
+  var writeDays;
+void dioUserMseeage()
+async{
+   await getUserMessage.getUserMessage(widget.token);
+}
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    dioUserMseeage();
+    id = getUserMessage.usermessage.data?.uid;
+    nickname = getUserMessage.usermessage.data?.nickname;
+    profilePath = getUserMessage.usermessage.data?.userProfilePicture;
+    if(nickname == null)
+    {
+      nickname = id;
+    }
+  }
   @override
   Widget build(BuildContext context) {
+ diaryNum = getUserMessage.usermessage.data.journalCount;
+  textNum = getUserMessage.usermessage.data.textCount;
+  writeDays = getUserMessage.usermessage.data.writeDays;
     return Scaffold(
       body: Container(
         decoration: new BoxDecoration(
@@ -30,13 +59,13 @@ class _PersonState extends State<Person> {
         ),
         child: Column(
           children: [
-            PersonNews(),
+            PersonNews(token: widget.token,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                MessageBox(),
-                MessageBox(),
-                MessageBox(),
+                MessageBox(namenum: '日记数量',num:'$diaryNum'),
+                MessageBox(namenum: '记录天数',num: '$writeDays'),
+                MessageBox(namenum: '总字数',num: '$textNum'),
               ],
             ),
             Spacer(),
@@ -44,7 +73,7 @@ class _PersonState extends State<Person> {
                 margin: EdgeInsets.all(20),
                 child: ElevatedButton(
                   onPressed: () {
-                    _UserBreakDialog(context);
+                    _UserBreakDialog(context,widget.token);
                   },
                   child: Text(
                     '注销账号',
@@ -63,13 +92,16 @@ class _PersonState extends State<Person> {
 }
 
 class PersonNews extends StatefulWidget {
-  const PersonNews({super.key});
-
+final String token;
+   PersonNews({Key? key, this.token = 'nulls'}) : super(key: key);
   @override
   State<PersonNews> createState() => _PersonNewsState();
 }
 
 class _PersonNewsState extends State<PersonNews> {
+
+  @override
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -87,14 +119,14 @@ class _PersonNewsState extends State<PersonNews> {
                     Padding(
                       padding: EdgeInsets.only(top: Adapt.pt(40)),
                       child: Text(
-                        'Username',
+                        '$nickname',
                         style: TextStyle(
                             fontSize: Adapt.pt(25),
                             fontWeight: FontWeight.bold),
                       ),
                     ),
                     Text(
-                      'ID',
+                      'ID:$id',
                       style: TextStyle(color: Color(0xff888888)),
                     ),
                   ],
@@ -106,7 +138,7 @@ class _PersonNewsState extends State<PersonNews> {
           height: Adapt.pt(30),
           child: TextButton(
             onPressed: () {
-              _modelBottomSheet(context);
+              _modelBottomSheet(context,widget.token);
             },
             child: Text(
               '编辑资料',
@@ -132,6 +164,14 @@ class _PersonNewsState extends State<PersonNews> {
   }
 }
 
+ImageProvider profile()
+{
+  if(profilePath == null)
+  {
+    return AssetImage(image1);
+  }
+ else {return NetworkImage(profilePath);}
+}
 class ProfilePhoto extends StatefulWidget {
   const ProfilePhoto({super.key});
 
@@ -150,7 +190,7 @@ class _ProfilePhotoState extends State<ProfilePhoto> {
         borderRadius: BorderRadius.circular(360),
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: AssetImage(image1),
+          image:profile()
         ),
       ),
     );
@@ -158,7 +198,9 @@ class _ProfilePhotoState extends State<ProfilePhoto> {
 }
 
 class MessageBox extends StatefulWidget {
-  const MessageBox({super.key});
+ late String namenum;
+ late String num;
+ MessageBox({super.key, required  this.num,required this.namenum});
 
   @override
   State<MessageBox> createState() => _MessageBoxState();
@@ -177,7 +219,7 @@ class _MessageBoxState extends State<MessageBox> {
             flex: 4,
           ),
           Text(
-            '2',
+            widget.num,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 23,
@@ -188,7 +230,7 @@ class _MessageBoxState extends State<MessageBox> {
           Padding(
             padding: EdgeInsets.only(bottom: Adapt.pt(5)),
             child: Text(
-              'xx数量',
+              widget.namenum,
               style: TextStyle(
                 color: Color(0xff445B28),
               ),
@@ -202,7 +244,7 @@ class _MessageBoxState extends State<MessageBox> {
   }
 }
 
-_modelBottomSheet(BuildContext context) async {
+_modelBottomSheet(BuildContext context,String token) async {
   var result = await showModalBottomSheet(
     context: context,
     builder: (context) {
@@ -219,7 +261,7 @@ _modelBottomSheet(BuildContext context) async {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ChangeImage()));
+                    MaterialPageRoute(builder: (context) => ChangeImage(token:token)));
               },
             ),
             Divider(),
@@ -231,7 +273,7 @@ _modelBottomSheet(BuildContext context) async {
               ),
               onTap: () {
                 Navigator.pop(context);
-                _ChangeNameDialog(context);
+                _ChangeNameDialog(context,token);
               },
             ),
           ],
@@ -242,29 +284,29 @@ _modelBottomSheet(BuildContext context) async {
 }
 
 class ChangeImage extends StatelessWidget {
-  ChangeImage({super.key});
+  ChangeImage({super.key,required this.token});
 
   String? imagepath;
   String? imagepath2;
   String? value;
+  String token;
 
   final ImagePicker picker = new ImagePicker();
 
   Future<void> pickimage() async {
     // 选择图片
     final openalbum = await picker.pickImage(source: ImageSource.gallery);
+if(openalbum!=null)
+  { ChangePImage(token,openalbum!);}
 
-    if (openalbum != null) {
-      imagepath = openalbum.path;
-    }
+
   }
 
   Future<void> takeimage() async {
     //拍照
     final takephoto = await picker.pickImage(source: ImageSource.camera);
-    if (takephoto != null) {
-      imagepath2 = takephoto.path;
-    }
+   ChangePImage(token,takephoto!);
+
   }
 
   @override
@@ -307,7 +349,7 @@ class ChangeImage extends StatelessWidget {
               InkWell(
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ReadyImage()));
+                      MaterialPageRoute(builder: (context) => ReadyImage(token: token,)));
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -387,7 +429,8 @@ class ChangeImage extends StatelessWidget {
 }
 
 class ReadyImage extends StatefulWidget {
-  const ReadyImage({super.key});
+ late String token;
+   ReadyImage({Key? key, this.token = 'nulls'}) : super(key: key);
 
   @override
   State<ReadyImage> createState() => _ReadyImageState();
@@ -417,44 +460,54 @@ class _ReadyImageState extends State<ReadyImage> {
         backgroundColor: Color(0xFF7B9F4D),
       ),
       body: Wrap(
-        children: [
-          Container(
-            margin: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('lib/assets/images/rabbit2.jpg'),
-                    fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(15)),
-            width: Adapt.pt(110),
-            height: Adapt.pt(110),
-          ),
-          Container(
-            margin: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('lib/assets/images/rabbit2.jpg'),
-                    fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(15)),
-            width: Adapt.pt(110),
-            height: Adapt.pt(110),
-          ),
-          Container(
-            margin: EdgeInsets.all(15),
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage('lib/assets/images/rabbit2.jpg'),
-                    fit: BoxFit.cover),
-                borderRadius: BorderRadius.circular(15)),
-            width: Adapt.pt(110),
-            height: Adapt.pt(110),
-          ),
+        children: <Widget>[
+          ImageChange(imagePath: 'http://8.130.98.175/images/1.jpg',token: widget.token,num: 1,),
+          ImageChange(imagePath: 'http://8.130.98.175/images/2.jpg',token: widget.token,num: 2,),
+          ImageChange(imagePath: 'http://8.130.98.175/images/3.jpg',token: widget.token,num: 3,),
+          ImageChange(imagePath: 'http://8.130.98.175/images/4.jpg',token: widget.token,num: 4,),
+          ImageChange(imagePath: 'http://8.130.98.175/images/5.jpg',token: widget.token,num: 5,),
+          ImageChange(imagePath: 'http://8.130.98.175/images/6.jpg',token: widget.token,num: 6,),
+          ImageChange(imagePath: 'http://8.130.98.175/images/7.jpg',token: widget.token,num: 7,),
+          ImageChange(imagePath: 'http://8.130.98.175/images/8.jpg',token: widget.token,num: 8,),
+
+
         ],
       ),
     );
   }
 }
 
-_ChangeNameDialog(BuildContext context) async {
+class ImageChange extends StatelessWidget {
+late String imagePath;
+late String token;
+late int num;
+
+ImageChange( {required this.imagePath,required this.token,required this.num,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap:(){
+          ChangeReadyImage(this.token,this.num);
+      } ,
+      child: Container(
+        margin: EdgeInsets.all(15),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: NetworkImage(this.imagePath),
+                fit: BoxFit.cover),
+            borderRadius: BorderRadius.circular(15)),
+        width: Adapt.pt(110),
+        height: Adapt.pt(110),
+      ),
+    );
+  }
+}
+
+_ChangeNameDialog(BuildContext context,String token) async {
+TextEditingController _controllerId = TextEditingController();
   var result = await showDialog(
       context: context,
       builder: (context) {
@@ -468,7 +521,7 @@ _ChangeNameDialog(BuildContext context) async {
               alignment: Alignment.center,
               height: 30,
               child: TextField(
-                  //   controller: _controllerId,
+                     controller: _controllerId,
                   decoration: InputDecoration(
                       hintStyle: TextStyle(color: Color(0xff888888)),
                       hintText: "请输入3-8个数字、字母或汉字",
@@ -491,6 +544,7 @@ _ChangeNameDialog(BuildContext context) async {
                             color: const Color.fromARGB(255, 255, 255, 255)),
                       ),
                       onPressed: () {
+                        ChangeNickName(token,_controllerId.text); 
                         Navigator.pop(context);
                       }),
                 ],
@@ -499,7 +553,7 @@ _ChangeNameDialog(BuildContext context) async {
       });
 }
 
-_UserBreakDialog(BuildContext context) async {
+_UserBreakDialog(BuildContext context,String token) async {
   var result = await showDialog(
       context: context,
       builder: (context) {
@@ -544,9 +598,11 @@ _UserBreakDialog(BuildContext context) async {
                     style: TextStyle(
                         color: const Color.fromARGB(255, 255, 255, 255)),
                   ),
-                  onPressed: () {
-                    Navigator.pop(context, "确定");
-                  },
+                  onPressed: () async {
+                    if(await logout(token)){
+ Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Interface()));                    }
+           },
                 ),
                 Spacer(),
               ],

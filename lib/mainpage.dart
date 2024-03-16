@@ -5,6 +5,7 @@ import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';
 import 'package:diary/editorpage.dart';
 import 'package:diary/person.dart';
+import 'package:diary/persondio.dart';
 import 'package:diary/searchpage.dart';
 import 'package:diary/sizecontrol.dart';
 import 'package:flutter/material.dart';
@@ -258,6 +259,9 @@ class _mainpageState extends State<mainpage> {
       _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
     }
     ;
+    getUserMessage = GetUserMessage(token);
+    getUserMessage.getUserMessage(token);
+
   }
 
   @override
@@ -626,8 +630,8 @@ class _mainpageState extends State<mainpage> {
             ),
           ),
           diarypage(),
-          Diarychuan(),
-          Person(),
+          Diarychuan(token),
+          Person(token:token),
         ],
       ),
       bottomNavigationBar: ClipRRect(
