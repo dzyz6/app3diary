@@ -1,35 +1,83 @@
+
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 
-Future<bool> Logoff(String token)async {
-    Dio dio =  Dio();
-    String url = "http://8.130.98.175:8080/logout";
-    dio.options.baseUrl=url;
-    dio.options.headers['token']=token;
-    Response response =  await dio.get(url);
-    if(response.data['code']==200)
-    {
-      return true;
+late var getUserMessage;
+
+Future<void> ChangePImage(String token,XFile image) async {
+    Future<FormData> FormData1() async {
+var attfile ;
+attfile = await MultipartFile.fromFile(image.path,filename: image.name);
+
+      return FormData.fromMap({
+      'file': attfile,
+    });
     }
-    else {
-      return false;
-    }
+    FormData fromdata = await FormData1() ;
+  Dio dio = Dio();
+  String url = "http://8.130.98.175/uploadUserProfilePicture";
+  dio.options.baseUrl = url;
+  dio.options.headers['token'] = token;
+  Response response = await dio.post(url,data: fromdata);
+  print(response);
+}
+Future<void> ChangeReadyImage(String token,int imagenum) async {
+  Dio dio = Dio();
+  String url = "http://8.130.98.175/setDefaultPictureByNum";
+  dio.options.baseUrl = url;
+  dio.options.headers['token'] = token;
+   Map<String,dynamic> map = Map();
+    map["background"] = 0;
+    map["userProfilePicture"] = imagenum;
+  Response response = await dio.put(url,data: map);
+    print(response);
+
 }
 
-Future<UserMessage> tokenTest(String token)async {
-    Dio dio =  Dio();
-    String url = "http://172.23.146.5:25565/";
-    dio.options.baseUrl=url;
-    dio.options.headers['token']=token;
-    Response response =  await dio.get(url);
-    var usermessage = UserMessage.fromJson(response.data);
-    return usermessage;
+
+Future<void> ChangeNickName(String token,String nickname) async {
+  Dio dio = Dio();
+  String url = "http://8.130.98.175/changeUserInfo";
+  dio.options.baseUrl = url;
+  dio.options.headers['token'] = token;
+   Map<String,dynamic> map = Map();
+    map['nickname']=nickname;
+    map['gender']=0;
+    map['birthDate']="2004-10-22";
+    map['location']='0';
+  Response response = await dio.put(url,data: map);
+  print(response);
 }
 
+Future<bool> logout(String token) async {
+  Dio dio = Dio();
+  String url = "http://8.130.98.175/logout";
+  dio.options.baseUrl = url;
+  dio.options.headers['token'] = token;
+  Response response = await dio.get(url);
+  if (response.data['code'] == 200) {
+    return true;
+  } else {
+    return false;
+  }
+}
+class GetUserMessage {
+ var usermessage = UserMessage();
 
+  GetUserMessage(String token);
+Future<void> getUserMessage(String token) async {
+  Dio dio = Dio();
+  String url = "http://8.130.98.175/getUserInfo";
+  dio.options.baseUrl = url;
+  dio.options.headers['token'] = token;
+  Response response = await dio.get(url);
+  usermessage = UserMessage.fromJson(response.data);
+}
+}
 class UserMessage {
-  int ?code;
+  int? code;
   String? message;
-  Data ?data;
+  Data? data;
 
   UserMessage({this.code, this.message, this.data});
 
@@ -53,14 +101,16 @@ class UserMessage {
 class Data {
   int? uid;
   String? username;
-  String ?nickname;
-  String ?gender;
-  String ?birthDate;
-  int ?journalCount;
-  int ?journalGroupCount;
+  String? nickname;
+  String? gender;
+  String? birthDate;
+  int? journalCount;
+  int? journalGroupCount;
   String? location;
-  String ?backgroundImage;
-  String ?userProfilePicture;
+  String? backgroundImage;
+  String? userProfilePicture;
+    int ? writeDays;
+    int ? textCount;
   Data(
       {this.uid,
       this.username,
@@ -71,7 +121,9 @@ class Data {
       this.journalGroupCount,
       this.location,
       this.backgroundImage,
-      this.userProfilePicture});
+      this.userProfilePicture,
+      this.writeDays,
+      this.textCount});
 
   Data.fromJson(Map<String, dynamic> json) {
     uid = json['uid'];
@@ -84,6 +136,8 @@ class Data {
     location = json['location'];
     backgroundImage = json['backgroundImage'];
     userProfilePicture = json['userProfilePicture'];
+    writeDays = json['writeDays'];
+    textCount = json['textCount'];
   }
 
   Map<String, dynamic> toJson() {
@@ -101,7 +155,3 @@ class Data {
     return data;
   }
 }
-
-
-
-

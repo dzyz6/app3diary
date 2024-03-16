@@ -6,6 +6,7 @@ import 'package:diary/diarypage.dart';
 import 'package:diary/editorpage.dart';
 import 'package:diary/kanpage.dart';
 import 'package:diary/person.dart';
+import 'package:diary/persondio.dart';
 import 'package:diary/searchpage.dart';
 import 'package:diary/sizecontrol.dart';
 import 'package:flutter/material.dart';
@@ -27,11 +28,115 @@ late String inside;
 //获取时间
 DateTime dateTime = DateTime.now();
 
+Widget getItem(int index) {
+  return GestureDetector(
+    onTap: (){
+
+    },
+    child: Column(
+      children: [
+        Container(
+          height: Adapt.pt(79),
+          child:
+             Row(
+               mainAxisAlignment: MainAxisAlignment.start,
+               children: [
+                 SizedBox(width: Adapt.pt(20),),
+                 Column(
+
+                  children: [
+                    SizedBox(
+                      height: Adapt.pt(15),
+                    ),
+                    RichText(
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: "$nowday",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(25), color: Colors.black)),
+                        TextSpan(
+                          text: "$_month",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(15), color: Colors.black)
+                        ),
+                        TextSpan(
+                            text: "月",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(13), color: Colors.black)
+                        ),
+
+                      ]),
+                    ),
+
+                    RichText(text: TextSpan(
+                      children:[
+                        TextSpan(
+                          text: "星期",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(12), color: Colors.black)
+                        ),
+                        TextSpan(
+                          text: a[DateTime(_year,_month,nowday).weekday-1],
+                          style: TextStyle(
+                              fontSize: Adapt.pt(12), color: Colors.black),
+                        ),
+                      ]
+                    )),
+
+                  ],
+
+
+                             ),
+                 RichText(text: TextSpan(children:[
+                   TextSpan(
+                     text: "$inside",style: TextStyle(
+                       fontSize: Adapt.pt(12), color: Colors.black),
+                   )
+                 ]))
+               ],
+             ),
+
+        ),
+        Divider(
+          height: Adapt.pt(1),
+          color: Color(0xFFE3E3E3),
+        )
+      ],
+    ),
+  );
+}
+
 int nowday = dateTime.day;
+
+class Getfromurl {
+  var _get = Get();
+
+  Future<void> createlist(String token) async {
+
+    Dio dio = Dio();
+    String url = "http://8.130.98.175:8080/getJournalsByUid";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map['page'] = 1;
+    map['pageSize'] = 5;
+    map['journalTitle'] = "";
+    map['range'] = 0;
+    map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
+    Response response = await dio.get(url, queryParameters: map);
+    _get=Get.fromJson(response.data);
+    inside=_get.data?.records[1].journalText;
+    print(_get.data?.records[0].journalText);
+    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+    print("$_year" + "-" + "$_month" + "-" + "$nowday");
+  }
+}
+
+
+var _geturl=Getfromurl();
 
 /// 位置服务
 Future _determinePosition() async {
-
   bool serviceEnabled;
   LocationPermission permission;
   double longitude = 0;
@@ -69,7 +174,6 @@ Future _determinePosition() async {
     Position position = await Geolocator.getCurrentPosition();
     longitude = position.longitude;
     latitude = position.latitude;
-
   } catch (e) {
     print(e);
   }
@@ -188,6 +292,9 @@ class _mainpageState extends State<mainpage> {
     }
     ;
     createlist(token);
+    getUserMessage = GetUserMessage(token);
+    getUserMessage.getUserMessage(token);
+
   }
 
   @override
@@ -661,8 +768,8 @@ class _mainpageState extends State<mainpage> {
             ),
           ),
           diarypage(),
-          Diarychuan(),
-          Person(),
+          Diarychuan(token),
+          Person(token:token),
         ],
       ),
       bottomNavigationBar: ClipRRect(

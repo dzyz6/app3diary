@@ -49,6 +49,21 @@ String encryptMd5(String str) {
 class RegisterFunction{
   RegisterFunction();
 var  user = Users();
+Future<void> tokenTest(String token)async {
+    Dio dio =  Dio();
+    String url = "http://8.130.98.175:8080/createJournal";
+    dio.options.baseUrl=url;
+    dio.options.headers['token']=token;
+   Map<String,dynamic> map = Map();
+    map['location']='saddsd';
+    map['journalTitle']='aaaaa';
+    map['journalText']='aaaaa';
+    map['topJournal']=0;
+    Response response =  await dio.post(url,data: map);
+  print(response);
+  print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+
+}
 
 
  Future <void> postFunctionR(String username,String password) async{

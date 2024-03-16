@@ -6,7 +6,7 @@ var image1 = 'lib/assets/images/rabbit1.jpg';
 var image2 = 'lib/assets/images/rabbit2.jpg';
 
 class Diarychuan extends StatefulWidget {
-  const Diarychuan({super.key});
+  const Diarychuan(String token, {super.key});
   @override
   State<Diarychuan> createState() => _DiarychuanState();
 }
