@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:diary/mainpage.dart';
+import 'package:diary/pageanimate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/sizecontrol.dart';
@@ -146,9 +147,13 @@ class RInterfaceText extends StatelessWidget {
                await register.postFunctionR(
                     _controllerId.text, _controllerS.text);
                 if ( register.user.code == 200) {
+                  FocusScope.of(context).unfocus();
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    Navigator.push(context,
+                        FadeRoute(page:mainpage(token:register.user.data!.token!)));
+                  });
 
-                 Navigator.push(context,
-                     MaterialPageRoute(builder: (context) => mainpage(token:register.user.data!.token!)));
+
                 }
                 else {
                   String? text = register.user.message;

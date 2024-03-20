@@ -5,10 +5,12 @@ import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';
 import 'package:diary/editorpage.dart';
 import 'package:diary/kanpage.dart';
+import 'package:diary/pageanimate.dart';
 import 'package:diary/person.dart';
 import 'package:diary/persondio.dart';
 import 'package:diary/searchpage.dart';
 import 'package:diary/sizecontrol.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pickers/pickers.dart';
 import 'package:flutter_pickers/style/picker_style.dart';
@@ -30,7 +32,7 @@ DateTime dateTime = DateTime.now();
 
 Widget getItem(int index) {
   return GestureDetector(
-    onTap: (){
+    onTap: () {
 
     },
     child: Column(
@@ -38,63 +40,63 @@ Widget getItem(int index) {
         Container(
           height: Adapt.pt(79),
           child:
-             Row(
-               mainAxisAlignment: MainAxisAlignment.start,
-               children: [
-                 SizedBox(width: Adapt.pt(20),),
-                 Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(width: Adapt.pt(20),),
+              Column(
 
-                  children: [
-                    SizedBox(
-                      height: Adapt.pt(15),
-                    ),
-                    RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: "$nowday",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(25), color: Colors.black)),
-                        TextSpan(
+                children: [
+                  SizedBox(
+                    height: Adapt.pt(15),
+                  ),
+                  RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: "$nowday",
+                          style: TextStyle(
+                              fontSize: Adapt.pt(25), color: Colors.black)),
+                      TextSpan(
                           text: "$_month",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(15), color: Colors.black)
-                        ),
-                        TextSpan(
-                            text: "月",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(13), color: Colors.black)
-                        ),
+                          style: TextStyle(
+                              fontSize: Adapt.pt(15), color: Colors.black)
+                      ),
+                      TextSpan(
+                          text: "月",
+                          style: TextStyle(
+                              fontSize: Adapt.pt(13), color: Colors.black)
+                      ),
 
-                      ]),
-                    ),
+                    ]),
+                  ),
 
-                    RichText(text: TextSpan(
-                      children:[
+                  RichText(text: TextSpan(
+                      children: [
                         TextSpan(
-                          text: "星期",
+                            text: "星期",
                             style: TextStyle(
                                 fontSize: Adapt.pt(12), color: Colors.black)
                         ),
                         TextSpan(
-                          text: a[DateTime(_year,_month,nowday).weekday-1],
+                          text: a[DateTime(_year, _month, nowday).weekday - 1],
                           style: TextStyle(
                               fontSize: Adapt.pt(12), color: Colors.black),
                         ),
                       ]
-                    )),
+                  )),
 
-                  ],
+                ],
 
 
-                             ),
-                 RichText(text: TextSpan(children:[
-                   TextSpan(
-                     text: "$inside",style: TextStyle(
-                       fontSize: Adapt.pt(12), color: Colors.black),
-                   )
-                 ]))
-               ],
-             ),
+              ),
+              RichText(text: TextSpan(children: [
+                TextSpan(
+                  text: "$inside", style: TextStyle(
+                    fontSize: Adapt.pt(12), color: Colors.black),
+                )
+              ]))
+            ],
+          ),
 
         ),
         Divider(
@@ -108,32 +110,6 @@ Widget getItem(int index) {
 
 int nowday = dateTime.day;
 
-class Getfromurl {
-  var _get = Get();
-
-  Future<void> createlist(String token) async {
-
-    Dio dio = Dio();
-    String url = "http://8.130.98.175:8080/getJournalsByUid";
-    dio.options.baseUrl = url;
-    dio.options.headers['token'] = token;
-    Map<String, dynamic> map = Map();
-    map['page'] = 1;
-    map['pageSize'] = 5;
-    map['journalTitle'] = "";
-    map['range'] = 0;
-    map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
-    Response response = await dio.get(url, queryParameters: map);
-    _get=Get.fromJson(response.data);
-    inside=_get.data?.records[1].journalText;
-    print(_get.data?.records[0].journalText);
-    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
-    print("$_year" + "-" + "$_month" + "-" + "$nowday");
-  }
-}
-
-
-var _geturl=Getfromurl();
 
 /// 位置服务
 Future _determinePosition() async {
@@ -195,7 +171,7 @@ int _year = dateTime.year;
 class _mainpageState extends State<mainpage> {
   var _get = Get();
   Dio dio = Dio();
-  String? inside;
+
 
   Future<void> createlist(String token) async {
     String url = "http://8.130.98.175/getJournalsByUid";
@@ -210,17 +186,7 @@ class _mainpageState extends State<mainpage> {
     Response response = await dio.get(url, queryParameters: map);
     _get = Get.fromJson(response.data);
 
-    setState(() {
-      if (_get != null &&
-          _get.data != null &&
-          _get.data!.records.isNotEmpty &&
-          _get.data?.total != 0) {
-        total = _get.data!.total;
-      } else {
-        total = 0;
-        inside = "";
-      }
-    });
+
 
     print(inside);
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
@@ -294,7 +260,6 @@ class _mainpageState extends State<mainpage> {
     createlist(token);
     getUserMessage = GetUserMessage(token);
     getUserMessage.getUserMessage(token);
-
   }
 
   @override
@@ -341,14 +306,15 @@ class _mainpageState extends State<mainpage> {
                                     topLeft: Radius.circular(Adapt.pt(20))),
                                 color: Colors.white)),
                         mode: DateMode.YM, onConfirm: (p) {
-                      setState(() {
-                        _month = p.month as int;
-                        _year = p.year as int;
-                        firstDayOfMonth = DateTime(_year, _month, 1);
-                        lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                        _itemStatuses = List.generate(42, (_) => false);
-                      });
-                    });
+                          setState(() {
+                            _month = p.month as int;
+                            _year = p.year as int;
+                            firstDayOfMonth = DateTime(_year, _month, 1);
+                            lastDayOfMonth = DateTime(_year, _month + 1, 0);
+                            _itemStatuses = List.generate(42, (_) => false);
+                            total = 0;
+                          });
+                        });
                   },
                   child: RichText(
                     text: TextSpan(
@@ -396,7 +362,7 @@ class _mainpageState extends State<mainpage> {
                 IconButton(
                   onPressed: () {
                     Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => searchpage()));
+                        CupertinoPageRoute(builder: (context) => searchpage()));
                   },
                   icon: Icon(
                     Icons.search_outlined,
@@ -423,8 +389,8 @@ class _mainpageState extends State<mainpage> {
             ),
             body:
 
-                //主页面
-                Column(
+            //主页面
+            Column(
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -653,123 +619,157 @@ class _mainpageState extends State<mainpage> {
                   height: Adapt.pt(2),
                   color: Color(0xFFE3E3E3),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                      itemCount: total,
-                      itemExtent: Adapt.pt(80),
-                      itemBuilder: (BuildContext context, int index) {
-                        inside = _get.data!.records[index].journalText;
-                        var time = _get.data!.records[index].createdAt;
-                        var creattime = time.substring(12, 14);
-                        var creattime2 = time.substring(15, 17);
-                        return GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Kanpage(token:token,month: _month,year: _year,nowday: nowday,)));
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                height: Adapt.pt(79),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: Adapt.pt(20),
-                                    ),
-                                    Column(
+                FutureBuilder(future: createlist(token),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<void> snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          return Center(
+                            child: Container(
+
+                            ),
+                          );
+
+                        case ConnectionState.done:
+
+                            if (_get != null &&
+                                _get.data != null &&
+                                _get.data!.records.isNotEmpty &&
+                                _get.data?.total != 0) {
+                              total = _get.data!.total;
+                            } else {
+                              total = 0;
+                              inside = "";
+                            }
+
+                          return Expanded(
+                            child: ListView.builder(
+                                itemCount: total,
+                                itemExtent: Adapt.pt(80),
+                                itemBuilder: (BuildContext context, int index) {
+                                  inside = _get.data!.records[index].journalText;
+                                  var time = _get.data!.records[index].createdAt;
+                                  var creattime = time.substring(12, 14);
+                                  var creattime2 = time.substring(15, 17);
+                                  return GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (context) =>
+                                                  Kanpage(token: token,
+                                                    month: _month,
+                                                    year: _year,
+                                                    nowday: nowday,)));
+                                    },
+                                    child: Column(
                                       children: [
-                                        SizedBox(
-                                          height: Adapt.pt(15),
-                                        ),
-                                        RichText(
-                                          text: TextSpan(children: [
-                                            TextSpan(
-                                                text: "$nowday",
-                                                style: TextStyle(
-                                                    fontSize: Adapt.pt(25),
-                                                    color: Colors.black)),
-                                            TextSpan(
-                                                text: "$_month",
-                                                style: TextStyle(
-                                                    fontSize: Adapt.pt(15),
-                                                    color: Colors.black)),
-                                            TextSpan(
-                                                text: "月",
-                                                style: TextStyle(
-                                                    fontSize: Adapt.pt(13),
-                                                    color: Colors.black)),
-                                          ]),
-                                        ),
-                                        RichText(
-                                            text: TextSpan(children: [
-                                          TextSpan(
-                                              text: "星期",
-                                              style: TextStyle(
-                                                  fontSize: Adapt.pt(12),
-                                                  color: Colors.black)),
-                                          TextSpan(
-                                            text: a[
-                                                DateTime(_year, _month, nowday)
-                                                        .weekday -
-                                                    1],
-                                            style: TextStyle(
-                                                fontSize: Adapt.pt(12),
-                                                color: Colors.black),
+                                        Container(
+                                          height: Adapt.pt(79),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: Adapt.pt(20),
+                                              ),
+                                              Column(
+                                                children: [
+                                                  SizedBox(
+                                                    height: Adapt.pt(15),
+                                                  ),
+                                                  RichText(
+                                                    text: TextSpan(children: [
+                                                      TextSpan(
+                                                          text: "$nowday",
+                                                          style: TextStyle(
+                                                              fontSize: Adapt.pt(25),
+                                                              color: Colors.black)),
+                                                      TextSpan(
+                                                          text: "$_month",
+                                                          style: TextStyle(
+                                                              fontSize: Adapt.pt(15),
+                                                              color: Colors.black)),
+                                                      TextSpan(
+                                                          text: "月",
+                                                          style: TextStyle(
+                                                              fontSize: Adapt.pt(13),
+                                                              color: Colors.black)),
+                                                    ]),
+                                                  ),
+                                                  RichText(
+                                                      text: TextSpan(children: [
+                                                        TextSpan(
+                                                            text: "星期",
+                                                            style: TextStyle(
+                                                                fontSize: Adapt.pt(12),
+                                                                color: Colors.black)),
+                                                        TextSpan(
+                                                          text: a[
+                                                          DateTime(_year, _month, nowday)
+                                                              .weekday -
+                                                              1],
+                                                          style: TextStyle(
+                                                              fontSize: Adapt.pt(12),
+                                                              color: Colors.black),
+                                                        ),
+                                                      ])),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                width: Adapt.pt(20),
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                                  mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "$inside",
+                                                      style: TextStyle(
+                                                        fontSize: Adapt.pt(15),
+                                                        color: Colors.black,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      softWrap: false,
+                                                    ),
+                                                    Text(
+                                                      "$creattime" + ":" + "$creattime2",
+                                                      style: TextStyle(
+                                                          fontSize: Adapt.pt(8),
+                                                          color: Color(0xff6b6b6b)),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ])),
+                                        ),
+                                        Divider(
+                                          height: Adapt.pt(1),
+                                          color: Color(0xFFE3E3E3),
+                                        )
                                       ],
                                     ),
-                                    SizedBox(
-                                      width: Adapt.pt(20),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "$inside",
-                                            style: TextStyle(
-                                              fontSize: Adapt.pt(15),
-                                              color: Colors.black,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                          Text(
-                                            "$creattime" + ":" + "$creattime2",
-                                            style: TextStyle(
-                                                fontSize: Adapt.pt(8),
-                                                color: Color(0xff6b6b6b)),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Divider(
-                                height: Adapt.pt(1),
-                                color: Color(0xFFE3E3E3),
-                              )
-                            ],
-                          ),
-                        );
-                        ;
-                      }),
-                )
+                                  );
+
+                                }),
+                          );
+                        case ConnectionState.none:
+                          return Container();
+                        case ConnectionState.active:
+                          return Container();
+                      }
+                    })
               ],
             ),
           ),
-          diarypage(),
+
+          diarypage( token: token,),
           Diarychuan(token),
-          Person(token:token),
+          Person(token: token),
         ],
       ),
       bottomNavigationBar: ClipRRect(
@@ -812,10 +812,8 @@ class _mainpageState extends State<mainpage> {
                 onPressed: () {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => editorpage(
-                                token: token,
-                              )));
+                      SlideRoute(page: editorpage(
+                        token: token,)));
                 },
                 elevation: 0,
                 backgroundColor: Color(0xFF7B9F4D),

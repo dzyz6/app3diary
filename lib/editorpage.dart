@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:diary/dioclass.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -61,14 +63,21 @@ String formatTime(String time) {
   return time.padLeft(2, '0');
 }
 
-Future<void> pickimage() async {
-  // 选择图片
-  final openalbum = await picker.pickImage(source: ImageSource.gallery);
-
-  if (openalbum != null) {
-    imagepath = openalbum.path;
-  }
+Future<void> pushimage(String token) async {
+  Dio dio = Dio();
+  String url = "http://8.130.98.175/uploadJournalPicture";
+  dio.options.baseUrl = url;
+  dio.options.headers['token'] = token;
+  Map<String, dynamic> map = Map();
+  map['journalId'] = "1";
+  map['file'] = '';
+  Response response = await dio.post(url, data: map);
+  print(response);
+  print('aaaaaaaaaaaaaaaaaaaaaaaaa');
 }
+
+
+
 
 class editorpage extends StatefulWidget {
   const editorpage({Key? key, required this.token}) : super(key: key);
@@ -82,10 +91,52 @@ class editorpage extends StatefulWidget {
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
 class _editorpageState extends State<editorpage> {
+
+
+  List<String> imagePaths = [];
+
+  int currentImageIndex = 0;
+
+  void deleteimage(int index){
+    setState(() {
+      currentImageIndex=index;
+      imagePaths.removeAt(currentImageIndex);
+
+    });
+
+  }
+
+
   DateTime datetime = DateTime.now();
   var editor = Editor();
 
   String token;
+
+  Future<void> postimage(String token,File file) async {
+    Dio dio = Dio();
+    String url = "http://8.130.98.175/uploadJournalPicture";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map['journalId'] = "1";
+    map['file']=file;
+    Response response = await dio.post(url, data: map);
+    print(response);
+    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+  }
+
+
+  Future<void> pickimage() async {
+    // 选择图片
+    final openalbum = await picker.pickImage(source: ImageSource.gallery);
+
+    if (openalbum != null) {
+      setState(() {
+        imagepath = openalbum.path;
+        imagePaths.add(imagepath!);
+      });
+    }
+  }
 
   _editorpageState({required this.token});
 
@@ -245,6 +296,48 @@ class _editorpageState extends State<editorpage> {
                               color: Color(0xFF7B9F4D), width: Adapt.pt(1.5)))),
                 ),
               ),
+              Container(
+                  height: 300,
+                  child: GridView.count(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: Adapt.pt(10),
+                    crossAxisSpacing: Adapt.pt(5),
+                      children: List.generate(
+                        imagePaths.length,
+                        (index) {
+                          if (imagePaths[index] != null) {
+                            return Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  child: Image.file(File(imagePaths[index]),fit: BoxFit.cover,),
+                                  padding: EdgeInsets.all(Adapt.pt(5)),
+                                ),
+                                Positioned(
+                                  child: SizedBox(
+                                    child: IconButton(
+                                        onPressed: () {
+                                          deleteimage(index);
+                                        },
+                                        icon: Icon(
+                                          Icons.backspace_outlined,
+                                          color: Colors.black,
+                                          size: Adapt.pt(15),
+                                        ),
+                                    padding: EdgeInsets.all(0),),
+                                    height: Adapt.pt(25),
+                                    width: Adapt.pt(25),
+                                  ),
+                                  top: Adapt.pt(0),
+                                  right: Adapt.pt(0),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
+                      )))
             ],
           ),
         ),
@@ -264,51 +357,53 @@ class _editorpageState extends State<editorpage> {
                 onPressed: () {
                   pickimage();
                 },
-                icon: Icon(Icons.terrain)),
+                icon: Icon(Icons.image)),
             IconButton(onPressed: () {}, icon: Icon(Icons.mic_none_rounded)),
             SizedBox(
               width: Adapt.pt(195),
             ),
             IconButton(
                 onPressed: () {
-                  if(textcontroller.text.toString()!=null&&textcontroller.text.toString()!=""){
+                  if (textcontroller.text.toString() != null &&
+                      textcontroller.text.toString() != "") {
                     editor.tokenTest(token);
                     FocusScope.of(context).unfocus();
-                    Navigator.pop(context);
-                  }
-                  else{
-                  showGeneralDialog(
-                      context: context,
-                      pageBuilder: (BuildContext context,
-                          Animation<double> animation,
-                          Animation<double> secondaryAnimation) {
-                        return AlertDialog(
-                          content: Container(
-                              height: Adapt.pt(40),
-                              child: Center(
-                                  child: Text(
-                                "请填写内容૮꒰ ˶• ༝ •˶꒱ა",
-                                style: TextStyle(fontSize: Adapt.pt(20)),
-                              ))),
-                          actions: [
-                            GestureDetector(
-                              onTap: (){
-                                Navigator.of(context).pop() ;
-                              },
-                              child: Container(
-                                child: Text(
-                                "好的捏",
-                                style: TextStyle(color: Colors.white),
-                                                            ),
-                                decoration: BoxDecoration(
-                                  color:Color(0xFF7B9F4D),
-                                  borderRadius: BorderRadius.all(Radius.circular(Adapt.pt(20)))
-                                ),
-                                padding: EdgeInsets.all(Adapt.pt(10)),
-                              )
-                            )],
-                        );
-                      });
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pop(context);
+                    });
+                  } else {
+                    showGeneralDialog(
+                        context: context,
+                        pageBuilder: (BuildContext context,
+                            Animation<double> animation,
+                            Animation<double> secondaryAnimation) {
+                          return AlertDialog(
+                            content: Container(
+                                height: Adapt.pt(40),
+                                child: Center(
+                                    child: Text(
+                                  "请填写内容૮꒰ ˶• ༝ •˶꒱ა",
+                                  style: TextStyle(fontSize: Adapt.pt(20)),
+                                ))),
+                            actions: [
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Container(
+                                    child: Text(
+                                      "好的捏",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFF7B9F4D),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(Adapt.pt(20)))),
+                                    padding: EdgeInsets.all(Adapt.pt(10)),
+                                  ))
+                            ],
+                          );
+                        });
                   }
                 },
                 icon: Icon(Icons.check)),
@@ -339,3 +434,8 @@ class Editor {
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
   }
 }
+
+
+
+
+

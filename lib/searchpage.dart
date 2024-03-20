@@ -80,8 +80,9 @@ class _searchpageState extends State<searchpage> {
               ),
               onPressed: () {
                 FocusScope.of(context).unfocus();
-                Duration(milliseconds: 300);
-                Navigator.pop(context);
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.pop(context);
+                });
               },
             ),
           ],
