@@ -35,7 +35,6 @@ class _diarypageState extends State<diarypage> {
     if (_isListCreated) {
       return; // 避免重复调用
     }
-
     _isListCreated = true;
     String url = "http://8.130.98.175/getJournalsByUid";
     dio.options.baseUrl = url;
@@ -43,7 +42,6 @@ class _diarypageState extends State<diarypage> {
     Map<String, dynamic> map = Map();
     map['page'] = 1;
     map['pageSize'] = 100;
-    map['journalTitle'] = "";
     map['range'] = 0;
     map['date'] = null;
     Response response = await dio.get(url, queryParameters: map);
@@ -82,7 +80,9 @@ class _diarypageState extends State<diarypage> {
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
-                              builder: (context) => searchpage()));
+                              builder: (context) => searchpage(
+                                    token: token,
+                                  )));
                     },
                     icon: Icon(
                       Icons.search_outlined,
@@ -272,48 +272,255 @@ class _diarypageState extends State<diarypage> {
                                   ],
                                 ),
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    height: Adapt.pt(40),
-                                  ),
-                                  Row(
-                                    children: [
-                                      SizedBox(
+                              Container(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(
                                           child: IconButton(
-
                                             padding: new EdgeInsets.all(0.0),
-                                        onPressed: () {},
-                                        icon: Icon(
-                                          MyFlutterApp.circle,
-                                          size: Adapt.pt(18),
-                                          color: Color(0xFF7B9F4D),
-                                        ),
-                                      ),
-                                      height: Adapt.pt(25),width: Adapt.pt(25),),
-
-                                      SizedBox(
-                                        width: Adapt.pt(10),
-                                      ),
-
-                                      SizedBox(
-                                        child: IconButton(
-
-                                          padding: new EdgeInsets.all(0.0),
-                                          onPressed: () {},
-                                          icon: Icon(
-                                            Icons.more_horiz,
-                                            size: Adapt.pt(25),
-                                            color: Color(0xFF7B9F4D),
+                                            onPressed: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return Container(
+                                                    height: Adapt.pt(200),
+                                                    width: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topLeft:
+                                                            const Radius.circular(
+                                                                20.0),
+                                                        topRight:
+                                                            const Radius.circular(
+                                                                20.0),
+                                                      ),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        GestureDetector(
+                                                          child: Container(
+                                                            child: Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Icon(
+                                                                  Icons
+                                                                      .format_list_bulleted,
+                                                                  size: Adapt.pt(
+                                                                      30),
+                                                                  color: Color(
+                                                                      0xffffaeae),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Text(
+                                                                  "展示当前日记串",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          Adapt.pt(
+                                                                              18)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    Adapt.pt(15)),
+                                                          ),
+                                                        ),
+                                                        Divider(
+                                                          color: Colors.grey,
+                                                        ),
+                                                        GestureDetector(
+                                                          child: Container(
+                                                            child: Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Icon(
+                                                                  Icons.add,
+                                                                  size: Adapt.pt(
+                                                                      35),
+                                                                  color: Color(
+                                                                      0xffc3f4ff),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Text(
+                                                                  "新建日记到当前日记串",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          Adapt.pt(
+                                                                              18)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    Adapt.pt(8)),
+                                                          ),
+                                                        ),
+                                                        Divider(
+                                                          color: Colors.grey,
+                                                        ),
+                                                        GestureDetector(
+                                                          child: Container(
+                                                            child: Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Icon(
+                                                                  Icons
+                                                                      .exit_to_app,
+                                                                  size: Adapt.pt(
+                                                                      30),
+                                                                  color: Color(
+                                                                      0xffffe4a8),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Text(
+                                                                  "从日记串移出",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          Adapt.pt(
+                                                                              18)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    Adapt.pt(10)),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            icon: Icon(
+                                              MyFlutterApp.circle,
+                                              size: Adapt.pt(18),
+                                              color: Color(0xFF7B9F4D),
+                                            ),
                                           ),
+                                          height: Adapt.pt(25),
+                                          width: Adapt.pt(25),
                                         ),
-                                        height: Adapt.pt(25),width: Adapt.pt(25),),
-                                      SizedBox(
-                                        width: Adapt.pt(10),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                                        SizedBox(
+                                          width: Adapt.pt(10),
+                                        ),
+                                        SizedBox(
+                                          child: IconButton(
+                                            padding: new EdgeInsets.all(0.0),
+                                            onPressed: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return Container(
+                                                    height: Adapt.pt(200),
+                                                    width: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        topLeft:
+                                                            const Radius.circular(
+                                                                20.0),
+                                                        topRight:
+                                                            const Radius.circular(
+                                                                20.0),
+                                                      ),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        GestureDetector(
+                                                          child: Container(
+                                                            child: Text(
+                                                              "查看日记",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      Adapt.pt(
+                                                                          18)),
+                                                            ),
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    Adapt.pt(15)),
+                                                          ),
+                                                        ),
+                                                        Divider(
+                                                          color: Colors.grey,
+                                                        ),
+                                                        GestureDetector(
+                                                          child: Container(
+                                                            child: Text(
+                                                              "编辑日记",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      Adapt.pt(
+                                                                          18)),
+                                                            ),
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    Adapt.pt(10)),
+                                                          ),
+                                                        ),
+                                                        Divider(
+                                                          color: Colors.grey,
+                                                        ),
+                                                        GestureDetector(
+                                                          child: Container(
+                                                            child: Text(
+                                                              "置顶该日记",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      Adapt.pt(
+                                                                          18)),
+                                                            ),
+                                                            margin:
+                                                                EdgeInsets.all(
+                                                                    Adapt.pt(10)),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            icon: Icon(
+                                              Icons.more_horiz,
+                                              size: Adapt.pt(25),
+                                              color: Color(0xFF7B9F4D),
+                                            ),
+                                          ),
+                                          height: Adapt.pt(25),
+                                          width: Adapt.pt(25),
+                                        ),
+                                        SizedBox(
+                                          width: Adapt.pt(10),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+
+                                ),
                               )
                             ],
                           ),

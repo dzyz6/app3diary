@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';
@@ -174,7 +173,7 @@ class _mainpageState extends State<mainpage> {
 
 
   Future<void> createlist(String token) async {
-    String url = "http://8.130.98.175/getJournalsByUid";
+    String url = "https://mambaout.xyz/getJournalsByUid";
     dio.options.baseUrl = url;
     dio.options.headers['token'] = token;
     Map<String, dynamic> map = Map();
@@ -185,8 +184,6 @@ class _mainpageState extends State<mainpage> {
     map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
     Response response = await dio.get(url, queryParameters: map);
     _get = Get.fromJson(response.data);
-
-
 
     print(inside);
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
@@ -306,14 +303,27 @@ class _mainpageState extends State<mainpage> {
                                     topLeft: Radius.circular(Adapt.pt(20))),
                                 color: Colors.white)),
                         mode: DateMode.YM, onConfirm: (p) {
-                          setState(() {
-                            _month = p.month as int;
-                            _year = p.year as int;
-                            firstDayOfMonth = DateTime(_year, _month, 1);
-                            lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                            _itemStatuses = List.generate(42, (_) => false);
-                            total = 0;
-                          });
+                          if(_month==dateTime.month){
+                            setState(() {
+                              _month = p.month as int;
+                              _year = p.year as int;
+                              firstDayOfMonth = DateTime(_year, _month, 1);
+                              lastDayOfMonth = DateTime(_year, _month + 1, 0);
+                              _itemStatuses = List.generate(42, (_) => false);
+                              total = 0;
+                            });
+                          }
+                          else{
+                            setState(() {
+                              _month = p.month as int;
+                              _year = p.year as int;
+                              firstDayOfMonth = DateTime(_year, _month, 1);
+                              lastDayOfMonth = DateTime(_year, _month + 1, 0);
+                              _itemStatuses = List.generate(42, (_) => false);
+                              _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
+                              total = 0;
+                            });
+                          }
                         });
                   },
                   child: RichText(
@@ -362,7 +372,7 @@ class _mainpageState extends State<mainpage> {
                 IconButton(
                   onPressed: () {
                     Navigator.push(context,
-                        CupertinoPageRoute(builder: (context) => searchpage()));
+                        CupertinoPageRoute(builder: (context) => searchpage(token: token,)));
                   },
                   icon: Icon(
                     Icons.search_outlined,
@@ -744,6 +754,7 @@ class _mainpageState extends State<mainpage> {
                                                   ],
                                                 ),
                                               ),
+                                              SizedBox(width: Adapt.pt(40),)
                                             ],
                                           ),
                                         ),

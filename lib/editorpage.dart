@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:diary/dioclass.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -63,20 +62,6 @@ String formatTime(String time) {
   return time.padLeft(2, '0');
 }
 
-Future<void> pushimage(String token) async {
-  Dio dio = Dio();
-  String url = "http://8.130.98.175/uploadJournalPicture";
-  dio.options.baseUrl = url;
-  dio.options.headers['token'] = token;
-  Map<String, dynamic> map = Map();
-  map['journalId'] = "1";
-  map['file'] = '';
-  Response response = await dio.post(url, data: map);
-  print(response);
-  print('aaaaaaaaaaaaaaaaaaaaaaaaa');
-}
-
-
 
 
 class editorpage extends StatefulWidget {
@@ -112,18 +97,7 @@ class _editorpageState extends State<editorpage> {
 
   String token;
 
-  Future<void> postimage(String token,File file) async {
-    Dio dio = Dio();
-    String url = "http://8.130.98.175/uploadJournalPicture";
-    dio.options.baseUrl = url;
-    dio.options.headers['token'] = token;
-    Map<String, dynamic> map = Map();
-    map['journalId'] = "1";
-    map['file']=file;
-    Response response = await dio.post(url, data: map);
-    print(response);
-    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
-  }
+
 
 
   Future<void> pickimage() async {
@@ -420,18 +394,40 @@ class Editor {
   var user = Users();
 
   Future<void> tokenTest(String token) async {
+    // 创建 Dio 实例
     Dio dio = Dio();
-    String url = "http://8.130.98.175/createJournal";
-    dio.options.baseUrl = url;
-    dio.options.headers['token'] = token;
-    Map<String, dynamic> map = Map();
-    map['location'] = "1";
-    map['journalTitle'] = '';
-    map['journalText'] = textcontroller.text.toString();
-    map['topJournal'] = 0;
-    Response response = await dio.post(url, data: map);
-    print(response);
-    print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+
+
+    // 设置请求的 URL（注意：您不需要在这里设置 baseUrl，因为我们会直接在 post 方法中传入完整的 URL）
+    String url = "https://mambaout.xyz/createJournal";
+
+    // 创建 FormData 对象
+      FormData formData = FormData.fromMap({
+        'location': '1', // 假设 location 是一个字符串
+        'journalTitle': '', // 如果 journalTitle 是可选的并且没有值，可以留空
+        'journalText': textcontroller.text, // 使用 TextEditingController 的 text 属性
+        'topJournal': '0', // 假设 topJournal 是一个字符串格式的整数
+      });
+
+
+
+
+    // 设置请求头
+    Options options = Options(
+        headers: {
+          'token': token, // 设置认证 token
+        }
+    );
+
+    // 发送 POST 请求
+    try {
+      Response response = await dio.post(url, data: formData, options: options);
+      print(response.data); // 打印服务器返回的数据
+      print('请求成功');
+    } catch (e) {
+      // 错误处理
+      print('请求失败: $e');
+    }
   }
 }
 
