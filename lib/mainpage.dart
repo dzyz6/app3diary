@@ -125,7 +125,7 @@ class Getfromurl {
     map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
     Response response = await dio.get(url, queryParameters: map);
     _get=Get.fromJson(response.data);
-    inside=_get.data?.records[1].journalText;
+    inside=_get.data!.records[1].journalText;
     print(_get.data?.records[0].journalText);
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
     print("$_year" + "-" + "$_month" + "-" + "$nowday");

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:diary/register.dart/data.dart';
 import 'package:flutter/material.dart';
 import './sizecontrol.dart';
+
 var image1 = 'lib/assets/images/rabbit1.jpg';
 var image2 = 'lib/assets/images/rabbit2.jpg';
 
@@ -13,7 +14,6 @@ class Diarychuan extends StatefulWidget {
 
 class _DiarychuanState extends State<Diarychuan> {
   @override
-
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -31,14 +31,26 @@ class _DiarychuanState extends State<Diarychuan> {
         ],
         backgroundColor: Color(0xFF7B9F4D),
       ),
-      body: DiaryList(),
+      body: Container(
+          decoration: new BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.5, 1.0],
+              tileMode: TileMode.decal,
+              colors: [
+                Colors.white,
+                Color(0xffEFFCDE),
+              ],
+            ),
+          ),
+          child: DiaryList()),
     );
   }
 }
 
 List<Widget> litems = [ImageListCard(), ImageListCard()];
-List<Widget> chuanlitems=[];
-
+List<Widget> chuanlitems = [];
 
 class DiaryList extends StatefulWidget {
   const DiaryList({super.key});
@@ -88,10 +100,8 @@ class _ImageBoxState extends State<ImageBox> {
   Widget build(BuildContext context) {
     return InkWell(
         onTap: () {
-
-                 Navigator.push(context,
-                     MaterialPageRoute(builder: (context) => Diarychuan2()));
-          
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => Diarychuan2()));
         },
         child: Container(
           height: Adapt.pt(200),
@@ -160,12 +170,9 @@ class DiaryLine extends StatefulWidget {
   @override
   State<DiaryLine> createState() => _DiaryLineState();
 }
-  
-  
 
 class _DiaryLineState extends State<DiaryLine> {
   @override
-
   Widget build(BuildContext context) {
     return Container(
       child: Row(
@@ -189,10 +196,10 @@ class _DiaryLineState extends State<DiaryLine> {
                     width: 200,
                     height: 200,
                   ),
-                 Text(
-                      '哈哈哈哈哈！哈哈哈哈哈！kkkkkkk',
-                      style: TextStyle(fontSize: 17),
-                    ),
+                  Text(
+                    '哈哈哈哈哈！哈哈哈哈哈！kkkkkkk',
+                    style: TextStyle(fontSize: 17),
+                  ),
                   DiaryCondition()
                 ],
               ),
@@ -242,7 +249,7 @@ class _DiaryConditionState extends State<DiaryCondition> {
 class ChuanLine extends StatelessWidget {
   //var _x;
   //var _y;
- ChuanLine({super.key});
+  ChuanLine({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -252,13 +259,15 @@ class ChuanLine extends StatelessWidget {
           foregroundPainter: CirclePainter(),
           child: DiaryLine(),
         ),
-         CustomPaint(
+        CustomPaint(
           foregroundPainter: CirclePainter(),
           child: DiaryLine(),
-        ), CustomPaint(
+        ),
+        CustomPaint(
           foregroundPainter: CirclePainter(),
           child: DiaryLine(),
-        ), CustomPaint(
+        ),
+        CustomPaint(
           foregroundPainter: CirclePainter(),
           child: DiaryLine(),
         ),
@@ -269,36 +278,35 @@ class ChuanLine extends StatelessWidget {
 
 List painterdata = [300];
 
-class CirclePainter extends CustomPainter {  
-Rect stretch(Rect f,int df)
-{
-  Rect pRect = Rect.fromLTRB(f.left, f.top+df, f.right, f.bottom+df);
-  return pRect;
-}
+class CirclePainter extends CustomPainter {
+  Rect stretch(Rect f, int df) {
+    Rect pRect = Rect.fromLTRB(f.left, f.top + df, f.right, f.bottom + df);
+    return pRect;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     Rect pRect1 = Rect.fromLTRB(90, 25, 115, 50);
     Rect pRect2 = Rect.fromLTRB(93, 28, 112, 47);
-    Paint paint1 = Paint()
-    ..color = const Color(0xFF445B28);
+    Paint paint1 = Paint()..color = const Color(0xFF445B28);
 
     Paint paint2 = Paint()..color = Color.fromARGB(255, 255, 255, 255);
-    Paint paint3 =Paint()..color =Color(0xff7B9F4D)..strokeWidth=2;
-for (var element in painterdata) {
-  canvas.drawOval(pRect1, paint1);
-    canvas.drawOval(pRect2, paint2);
-    canvas.drawLine(Offset(pRect1.center.dx, pRect1.bottom), Offset(pRect1.center.dx,pRect1.bottom+element), paint3);
-    pRect1=stretch(pRect1, element);
-    pRect2 =stretch(pRect2, element);
-}       
-    
-
+    Paint paint3 = Paint()
+      ..color = Color(0xff7B9F4D)
+      ..strokeWidth = 2;
+    for (var element in painterdata) {
+      canvas.drawOval(pRect1, paint1);
+      canvas.drawOval(pRect2, paint2);
+      canvas.drawLine(Offset(pRect1.center.dx, pRect1.bottom),
+          Offset(pRect1.center.dx, pRect1.bottom + element), paint3);
+      pRect1 = stretch(pRect1, element);
+      pRect2 = stretch(pRect2, element);
+    }
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 }
-
 
 class TimeData extends StatelessWidget {
   TimeData({super.key});
@@ -308,7 +316,8 @@ class TimeData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(left: Adapt.pt(20), right: Adapt.pt(50),top: Adapt.pt(20)),
+      margin: EdgeInsets.only(
+          left: Adapt.pt(20), right: Adapt.pt(50), top: Adapt.pt(20)),
       child: Column(
         children: [
           Row(
@@ -329,6 +338,7 @@ class TimeData extends StatelessWidget {
     );
   }
 }
+
 class Diarychuan2 extends StatefulWidget {
   const Diarychuan2({super.key});
 
@@ -337,21 +347,22 @@ class Diarychuan2 extends StatefulWidget {
 }
 
 class _Diarychuan2State extends State<Diarychuan2> {
-  var register =RegisterFunction();
+  var register = RegisterFunction();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(
-      leading: IconButton(
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
           icon: Icon(
             Icons.arrow_back_sharp,
             color: Colors.white,
           ),
           onPressed: () {
-          //  register.tokenTest();
+            //  register.tokenTest();
             Navigator.pop(context);
           },
         ),
-      actions: [
+        actions: [
           IconButton(
             onPressed: () {},
             icon: Icon(
@@ -362,8 +373,22 @@ class _Diarychuan2State extends State<Diarychuan2> {
             iconSize: 30,
           ),
         ],
-        backgroundColor: Color(0xFF7B9F4D),),
-      body: ChuanLine(),    
+        backgroundColor: Color(0xFF7B9F4D),
+      ),
+      body: Container(
+          decoration: new BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.5, 1.0],
+              tileMode: TileMode.decal,
+              colors: [
+                Colors.white,
+                Color(0xffEFFCDE),
+              ],
+            ),
+          ),
+          child: ChuanLine()),
     );
   }
 }
