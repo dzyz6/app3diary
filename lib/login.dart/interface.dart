@@ -3,6 +3,9 @@ import 'package:diary/register.dart/interface.dart';
 import 'package:flutter/material.dart';
 import 'package:diary/sizecontrol.dart';
 import './data.dart';
+import 'package:diary/pageanimate.dart';
+
+
 
 bool visible = false;
 TextEditingController _controllerId = TextEditingController();
@@ -166,8 +169,12 @@ class _InterfaceTextState extends State<InterfaceText> {
                   await login.postFunctionR(
                       _controllerId.text, _controllerS.text);
                   if (login.user.code == 200) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => mainpage(token: login.user.data!.token!,)));
+                    FocusScope.of(context).unfocus();
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.push(context,
+                          ScaleRoute(page: mainpage(token: login.user.data!.token!,)));
+                    });
+
                   } else {
                     setState(() {
                       visible = true;
