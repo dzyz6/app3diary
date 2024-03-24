@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'dioclass.dart';
 import 'sizecontrol.dart';
 import 'package:diary/searchpage.dart';
+import 'getpicturedio.dart';
 
 class diarypage extends StatefulWidget {
   const diarypage({Key? key, required this.token}) : super(key: key);
@@ -51,6 +52,24 @@ class _diarypageState extends State<diarypage> {
     });
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
     print(total);
+  }
+
+  var _get2 = Getpicture();
+  Future<void> getpicture(String token,String id) async {
+    String url = "https://mambaout.xyz/getJournalPictures";
+
+    // 设置请求头
+    Map<String, String> headers = {
+      'token': token,
+    };
+
+    // 设置查询参数
+    Map<String, dynamic> queryParameters = {
+      'journalId': id,
+    };
+    Response response = await dio.get(url, queryParameters: queryParameters, options: Options(headers: headers));
+    _get2 = Getpicture.fromJson(response.data);
+
   }
 
   @override
@@ -153,13 +172,13 @@ class _diarypageState extends State<diarypage> {
               ),
             ),
           ),
-          SliverList(
-              delegate:
-                  SliverChildBuilderDelegate((BuildContext context, int index) {
-            total = _get.data!.total;
-            return FutureBuilder(
-                future: createlist(token),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
+            SliverList(
+                delegate:
+                    SliverChildBuilderDelegate((BuildContext context, int index) {
+              total = _get.data!.total;
+              return FutureBuilder(
+                  future: createlist(token),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Container();
                   } else {
@@ -171,6 +190,9 @@ class _diarypageState extends State<diarypage> {
                     var creattimeday = time.substring(8, 10);
                     var creattimemonth = time.substring(6, 7);
                     var creattimeyear = time.substring(0, 4);
+                    getpicture(token, _get.data!.records[index].journalId.toString());
+
+
                     return Column(
                       children: [
                         Container(
@@ -259,6 +281,13 @@ class _diarypageState extends State<diarypage> {
                                         color: Colors.black,
                                       ),
                                     ),
+
+                                    _get2.data != null&&_get2.data!.length>0?Container(
+                                      child: Image.network(_get2.data![0].pictureUrl!, fit: BoxFit.cover),
+                                      height: Adapt.pt(50),
+                                      width: Adapt.pt(50),
+                                    ):Container(),
+
                                     Padding(
                                       padding:
                                           EdgeInsets.only(bottom: Adapt.pt(10)),
@@ -269,6 +298,9 @@ class _diarypageState extends State<diarypage> {
                                             color: Color(0xff6b6b6b)),
                                       ),
                                     ),
+
+
+
                                   ],
                                 ),
                               ),

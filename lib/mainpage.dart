@@ -25,87 +25,10 @@ var colorclick = Color(0xFFDCEEC4);
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
 int total = 0;
-late String inside;
+String? inside="";
 //获取时间
 DateTime dateTime = DateTime.now();
 
-Widget getItem(int index) {
-  return GestureDetector(
-    onTap: () {
-
-    },
-    child: Column(
-      children: [
-        Container(
-          height: Adapt.pt(79),
-          child:
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(width: Adapt.pt(20),),
-              Column(
-
-                children: [
-                  SizedBox(
-                    height: Adapt.pt(15),
-                  ),
-                  RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                          text: "$nowday",
-                          style: TextStyle(
-                              fontSize: Adapt.pt(25), color: Colors.black)),
-                      TextSpan(
-                          text: "$_month",
-                          style: TextStyle(
-                              fontSize: Adapt.pt(15), color: Colors.black)
-                      ),
-                      TextSpan(
-                          text: "月",
-                          style: TextStyle(
-                              fontSize: Adapt.pt(13), color: Colors.black)
-                      ),
-
-                    ]),
-                  ),
-
-                  RichText(text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: "星期",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(12), color: Colors.black)
-                        ),
-                        TextSpan(
-                          text: a[DateTime(_year, _month, nowday).weekday - 1],
-                          style: TextStyle(
-                              fontSize: Adapt.pt(12), color: Colors.black),
-                        ),
-                      ]
-                  )),
-
-                ],
-
-
-              ),
-              RichText(text: TextSpan(children: [
-                TextSpan(
-                  text: "$inside", style: TextStyle(
-                    fontSize: Adapt.pt(12), color: Colors.black),
-                )
-              ]))
-            ],
-          ),
-
-        ),
-        Divider(
-          height: Adapt.pt(1),
-          color: Color(0xFFE3E3E3),
-        )
-      ],
-    ),
-  );
-}
 
 int nowday = dateTime.day;
 
@@ -303,7 +226,7 @@ class _mainpageState extends State<mainpage> {
                                     topLeft: Radius.circular(Adapt.pt(20))),
                                 color: Colors.white)),
                         mode: DateMode.YM, onConfirm: (p) {
-                          if(_month==dateTime.month){
+                          if(_month==dateTime.month&&_year==dateTime.year){
                             setState(() {
                               _month = p.month as int;
                               _year = p.year as int;
@@ -319,7 +242,6 @@ class _mainpageState extends State<mainpage> {
                               _year = p.year as int;
                               firstDayOfMonth = DateTime(_year, _month, 1);
                               lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                              _itemStatuses = List.generate(42, (_) => false);
                               _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
                               total = 0;
                             });

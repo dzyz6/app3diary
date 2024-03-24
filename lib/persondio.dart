@@ -5,13 +5,15 @@ import 'package:image_picker/image_picker.dart';
 late var getUserMessage;
 
 Future<void> ChangePImage(String token,XFile image) async {
+  var attfile ;
     Future<FormData> FormData1() async {
-var attfile ;
+
 attfile = await MultipartFile.fromFile(image.path,filename: image.name);
 
       return FormData.fromMap({
       'file': attfile,
     });
+
     }
     FormData fromdata = await FormData1() ;
   Dio dio = Dio();
@@ -19,7 +21,9 @@ attfile = await MultipartFile.fromFile(image.path,filename: image.name);
   dio.options.baseUrl = url;
   dio.options.headers['token'] = token;
   Response response = await dio.post(url,data: fromdata);
+
   print(response);
+
 }
 Future<void> ChangeReadyImage(String token,int imagenum) async {
   Dio dio = Dio();
@@ -31,6 +35,7 @@ Future<void> ChangeReadyImage(String token,int imagenum) async {
     map["userProfilePicture"] = imagenum;
   Response response = await dio.put(url,data: map);
     print(response);
+
 
 }
 

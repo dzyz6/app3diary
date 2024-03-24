@@ -85,29 +85,44 @@ class FadeRoute extends PageRouteBuilder {
 }
 
 //滑动
-class SlideRoute extends PageRouteBuilder {
+class SlideRoute<T> extends PageRouteBuilder<T> {
+  /// 要展示的页面
   final Widget page;
+
+  /// 构造一个从底部滑入的路由
   SlideRoute({required this.page})
       : super(
     pageBuilder: (
         BuildContext context,
         Animation<double> animation,
         Animation<double> secondaryAnimation,
-        ) =>
-    page,
+        ) => page,
     transitionsBuilder: (
         BuildContext context,
         Animation<double> animation,
         Animation<double> secondaryAnimation,
         Widget child,
-        ) =>
-        SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 1),
-            end: Offset.zero,
-          ).animate(animation),
+        ) {
+      // 使用曲线使动画更平滑
+      final Curve curve = Curves.ease;
+      final Animatable<Offset> offsetTween = Tween<Offset>(
+        begin: const Offset(0, 1), // 起始位置在底部
+        end: Offset.zero, // 结束位置在顶部
+      ).chain(CurveTween(curve: curve));
+
+      // 应用动画曲线到Offset
+      final Animation<Offset> positionAnimation = offsetTween.animate(animation);
+
+      // 创建滑动过渡效果
+      return SlideTransition(
+        position: positionAnimation,
+        child: FadeTransition(
+          opacity: animation, // 可选：添加淡入效果
           child: child,
         ),
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 500), // 设置动画时长
   );
 }
 

@@ -14,6 +14,8 @@ class searchpage extends StatefulWidget {
 }
 
 class _searchpageState extends State<searchpage> {
+
+
   String token;
 
   _searchpageState({required this.token});
@@ -35,8 +37,9 @@ class _searchpageState extends State<searchpage> {
     Map<String, dynamic> map = Map();
     map['page'] = 1;
     map['pageSize'] = 100;
-    map['journalTitle'] = "";
+    map['journalTitle'] = null;
     map['range'] = 0;
+    map['date']=null;
     Response response = await dio.get(url, queryParameters: map);
     _get = Get.fromJson(response.data);
 
@@ -133,6 +136,9 @@ class _searchpageState extends State<searchpage> {
             padding: EdgeInsets.only(right: Adapt.pt(20)),
             child: GestureDetector(
               onTap: (){
+                setState(() {
+
+                });
 
               },
               child: Text("搜索",style: TextStyle(fontSize: Adapt.pt(15),color: Color(0xFF7B9F4D)),),
@@ -149,7 +155,7 @@ class _searchpageState extends State<searchpage> {
                 end: Alignment.bottomCenter,
 
                 colors: [Colors.white, Color(0xFFEFFCDE)])),
-        child: FutureBuilder(future: createlist(token),
+        child: _textcirl.text.isEmpty?Container():FutureBuilder(future: createlist(token),
             builder: (BuildContext context,
                 AsyncSnapshot<void> snapshot) {
               switch (snapshot.connectionState) {
@@ -159,9 +165,7 @@ class _searchpageState extends State<searchpage> {
 
                     ),
                   );
-
                 case ConnectionState.done:
-
                   if (_get != null &&
                       _get.data != null &&
                       _get.data!.records.isNotEmpty &&
@@ -171,116 +175,138 @@ class _searchpageState extends State<searchpage> {
                     total = 0;
                     inside = "";
                   }
+                  int p=0;
 
-                  return ListView.builder(
-                      itemCount: total,
-                      itemExtent: Adapt.pt(80),
-                      itemBuilder: (BuildContext context, int index) {
-                        inside = _get.data!.records[index].journalText;
+                  for(int i=0;i<total;i++){
+                    if(_get.data!.records[i].journalText.indexOf(_textcirl.text)!=-1){
+                      p++;
+                    }
+                  }
 
-                        var time = _get.data!.records[index].createdAt;
-                        var creattime = time.substring(12, 14);
-                        var creattime2 = time.substring(15, 17);
-                        var creattimeday = time.substring(8, 10);
-                        var creattimemonth = time.substring(6, 7);
-                        var creattimeyear = time.substring(0, 4);
-                        return GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                          },
-                          child: Column(
-                            children: [
-                              Container(
-                                height: Adapt.pt(79),
-                                child: Row(
-                                  children: [
-                                    SizedBox(
-                                      width: Adapt.pt(20),
-                                    ),
-                                    Column(
+                  if(p!=0){
+                    return ListView.builder(
+                        itemCount: total,
+                        itemBuilder: (BuildContext context, int index) {
+                          inside = _get.data!.records[index].journalText;
+                          var time = _get.data!.records[index].createdAt;
+                          var creattime = time.substring(12, 14);
+                          var creattime2 = time.substring(15, 17);
+                          var creattimeday = time.substring(8, 10);
+                          var creattimemonth = time.substring(6, 7);
+                          var creattimeyear = time.substring(0, 4);
+                          if(inside.indexOf(_textcirl.text)!=-1){
+                            return GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                              },
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: Adapt.pt(79),
+                                    child: Row(
                                       children: [
                                         SizedBox(
-                                          height: Adapt.pt(15),
+                                          width: Adapt.pt(20),
                                         ),
-                                        RichText(
-                                          text: TextSpan(children: [
-                                            TextSpan(
-                                                text: "$creattimeday",
-                                                style: TextStyle(
-                                                    fontSize: Adapt.pt(25),
-                                                    color: Colors.black)),
-                                            TextSpan(
-                                                text: "$creattimemonth",
-                                                style: TextStyle(
-                                                    fontSize: Adapt.pt(15),
-                                                    color: Colors.black)),
-                                            TextSpan(
-                                                text: "月",
-                                                style: TextStyle(
-                                                    fontSize: Adapt.pt(13),
-                                                    color: Colors.black)),
-                                          ]),
+                                        Column(
+                                          children: [
+                                            SizedBox(
+                                              height: Adapt.pt(15),
+                                            ),
+                                            RichText(
+                                              text: TextSpan(children: [
+                                                TextSpan(
+                                                    text: "$creattimeday",
+                                                    style: TextStyle(
+                                                        fontSize: Adapt.pt(25),
+                                                        color: Colors.black)),
+                                                TextSpan(
+                                                    text: "$creattimemonth",
+                                                    style: TextStyle(
+                                                        fontSize: Adapt.pt(15),
+                                                        color: Colors.black)),
+                                                TextSpan(
+                                                    text: "月",
+                                                    style: TextStyle(
+                                                        fontSize: Adapt.pt(13),
+                                                        color: Colors.black)),
+                                              ]),
+                                            ),
+                                            RichText(
+                                                text: TextSpan(children: [
+                                                  TextSpan(
+                                                      text: "星期",
+                                                      style: TextStyle(
+                                                          fontSize: Adapt.pt(12),
+                                                          color: Colors.black)),
+                                                  TextSpan(
+                                                    text: a[
+                                                    DateTime(int.parse(creattimeyear), int.parse(creattimemonth), int.parse(creattimeday))
+                                                        .weekday -
+                                                        1],
+                                                    style: TextStyle(
+                                                        fontSize: Adapt.pt(12),
+                                                        color: Colors.black),
+                                                  ),
+                                                ])),
+                                          ],
                                         ),
-                                        RichText(
-                                            text: TextSpan(children: [
-                                              TextSpan(
-                                                  text: "星期",
-                                                  style: TextStyle(
-                                                      fontSize: Adapt.pt(12),
-                                                      color: Colors.black)),
-                                              TextSpan(
-                                                text: a[
-                                                DateTime(int.parse(creattimeyear), int.parse(creattimemonth), int.parse(creattimeday))
-                                                    .weekday -
-                                                    1],
+                                        SizedBox(
+                                          width: Adapt.pt(20),
+                                        ),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                "$inside",
                                                 style: TextStyle(
-                                                    fontSize: Adapt.pt(12),
-                                                    color: Colors.black),
+                                                  fontSize: Adapt.pt(15),
+                                                  color: Colors.black,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
                                               ),
-                                            ])),
+                                              Text(
+                                                "$creattime" + ":" + "$creattime2",
+                                                style: TextStyle(
+                                                    fontSize: Adapt.pt(8),
+                                                    color: Color(0xff6b6b6b)),
+                                              ),
+
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(width: Adapt.pt(40),)
                                       ],
                                     ),
-                                    SizedBox(
-                                      width: Adapt.pt(20),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "$inside",
-                                            style: TextStyle(
-                                              fontSize: Adapt.pt(15),
-                                              color: Colors.black,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                          Text(
-                                            "$creattime" + ":" + "$creattime2",
-                                            style: TextStyle(
-                                                fontSize: Adapt.pt(8),
-                                                color: Color(0xff6b6b6b)),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  Divider(
+                                    height: Adapt.pt(1),
+                                    color: Color(0xFFE3E3E3),
+                                  )
+                                ],
                               ),
-                              Divider(
-                                height: Adapt.pt(1),
-                                color: Color(0xFFE3E3E3),
-                              )
-                            ],
-                          ),
-                        );
+                            );
+                          }
+                          else{
+                            return SizedBox.shrink();
+                          }
 
-                      });
+
+
+
+
+                        });
+                  }
+                  else{
+                    return Align(child: Container(child: Text("没有搜索到关键词",style: TextStyle(fontSize: Adapt.pt(15),color: Colors.grey),),),alignment: Alignment.topCenter,);
+                  }
+
                 case ConnectionState.none:
                   return Container();
                 case ConnectionState.active:
@@ -291,3 +317,8 @@ class _searchpageState extends State<searchpage> {
     );
   }
 }
+
+
+
+
+

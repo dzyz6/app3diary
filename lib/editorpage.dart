@@ -55,7 +55,7 @@ Future _determinePosition() async {
   }
 }
 
-String? imagepath;
+XFile? imagepath;
 ImagePicker picker = ImagePicker();
 
 String formatTime(String time) {
@@ -78,7 +78,7 @@ List a = ["一", "二", "三", "四", "五", "六", "天"];
 class _editorpageState extends State<editorpage> {
 
 
-  List<String> imagePaths = [];
+  List<XFile> imagePaths = [];
 
   int currentImageIndex = 0;
 
@@ -106,7 +106,7 @@ class _editorpageState extends State<editorpage> {
 
     if (openalbum != null) {
       setState(() {
-        imagepath = openalbum.path;
+        imagepath = openalbum;
         imagePaths.add(imagepath!);
       });
     }
@@ -284,7 +284,7 @@ class _editorpageState extends State<editorpage> {
                               alignment: Alignment.center,
                               children: [
                                 Container(
-                                  child: Image.file(File(imagePaths[index]),fit: BoxFit.cover,),
+                                  child: Image.file(File(imagePaths[index].path),fit: BoxFit.cover,),
                                   padding: EdgeInsets.all(Adapt.pt(5)),
                                 ),
                                 Positioned(
@@ -340,7 +340,7 @@ class _editorpageState extends State<editorpage> {
                 onPressed: () {
                   if (textcontroller.text.toString() != null &&
                       textcontroller.text.toString() != "") {
-                    editor.tokenTest(token);
+                    editor.tokenTest(token,imagePaths);
                     FocusScope.of(context).unfocus();
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pop(context);
@@ -390,28 +390,25 @@ class _editorpageState extends State<editorpage> {
 
 class Editor {
   Editor();
-
-  var user = Users();
-
-  Future<void> tokenTest(String token) async {
+  Future<void> tokenTest(String token,List<XFile> files) async {
     // 创建 Dio 实例
     Dio dio = Dio();
-
-
     // 设置请求的 URL（注意：您不需要在这里设置 baseUrl，因为我们会直接在 post 方法中传入完整的 URL）
     String url = "https://mambaout.xyz/createJournal";
 
+
     // 创建 FormData 对象
       FormData formData = FormData.fromMap({
-        'location': '1', // 假设 location 是一个字符串
-        'journalTitle': '', // 如果 journalTitle 是可选的并且没有值，可以留空
-        'journalText': textcontroller.text, // 使用 TextEditingController 的 text 属性
-        'topJournal': '0', // 假设 topJournal 是一个字符串格式的整数
+        'location': '1',
+        'journalTitle': '',
+        'journalText': textcontroller.text,
+        'topJournal': '0',
       });
 
-
-
-
+    for (int i = 0; i < files.length; i++) {
+        MultipartFile multipartFile = await MultipartFile.fromFile(files[i].path, filename: files[i].name);
+        formData.files.add(MapEntry('files', multipartFile));
+    }
     // 设置请求头
     Options options = Options(
         headers: {
@@ -422,7 +419,8 @@ class Editor {
     // 发送 POST 请求
     try {
       Response response = await dio.post(url, data: formData, options: options);
-      print(response.data); // 打印服务器返回的数据
+      print(response); // 打印服务器返回的数据
+      print(formData.files);
       print('请求成功');
     } catch (e) {
       // 错误处理
