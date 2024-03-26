@@ -126,6 +126,7 @@ class _diarypageState extends State<diarypage> {
     dio.options.headers['token'] = token;
     Response response = await dio.get(url, data: token);
     usermessage = await UserMessage.fromJson(response.data);
+    print(response);
   }
 
   _getusermessage() {
@@ -139,6 +140,7 @@ class _diarypageState extends State<diarypage> {
     super.initState();
     _futureget = _createlist();
     _getusermessage();
+    getUserMessage(token);
   }
 
   @override
@@ -432,7 +434,7 @@ class _diarypageState extends State<diarypage> {
                                                           ),
                                                           margin:
                                                               EdgeInsets.all(
-                                                                  Adapt.pt(15)),
+                                                                  Adapt.hpt(15)),
                                                         ),
                                                       ),
                                                       Divider(
@@ -468,7 +470,7 @@ class _diarypageState extends State<diarypage> {
                                                           ),
                                                           margin:
                                                               EdgeInsets.all(
-                                                                  Adapt.pt(8)),
+                                                                  Adapt.hpt(8)),
                                                         ),
                                                       ),
                                                       Divider(
@@ -505,7 +507,7 @@ class _diarypageState extends State<diarypage> {
                                                           ),
                                                           margin:
                                                               EdgeInsets.all(
-                                                                  Adapt.pt(10)),
+                                                                  Adapt.hpt(10)),
                                                         ),
                                                       ),
                                                     ],
@@ -556,12 +558,12 @@ class _diarypageState extends State<diarypage> {
                                                             "编辑日记",
                                                             style: TextStyle(
                                                                 fontSize:
-                                                                    Adapt.pt(
+                                                                    Adapt.hpt(
                                                                         18)),
                                                           ),
                                                           margin:
                                                               EdgeInsets.all(
-                                                                  Adapt.pt(15)),
+                                                                  Adapt.hpt(15)),
                                                         ),
                                                       ),
                                                       Divider(
@@ -579,7 +581,7 @@ class _diarypageState extends State<diarypage> {
                                                           ),
                                                           margin:
                                                               EdgeInsets.all(
-                                                                  Adapt.pt(10)),
+                                                                  Adapt.hpt(10)),
                                                         ),
                                                         onTap: ()async{
                                                           await delete(token, _get.data!.records[index].journalId.toString());
@@ -618,7 +620,7 @@ class _diarypageState extends State<diarypage> {
                           ],
                         ),
                         Divider(
-                          height: Adapt.pt(1),
+                          height: Adapt.hpt(1),
                           color: Color(0xFFE3E3E3),
                         )
                       ],
