@@ -36,7 +36,6 @@ Future<void> ChangeReadyImage(String token,int imagenum) async {
   Response response = await dio.put(url,data: map);
     print(response);
 
-
 }
 
 
@@ -79,6 +78,8 @@ Future<void> getUserMessage(String token) async {
   usermessage = UserMessage.fromJson(response.data);
 }
 }
+
+
 class UserMessage {
   int? code;
   String? message;

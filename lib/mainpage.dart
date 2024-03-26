@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:async/async.dart';
 import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';
@@ -95,6 +96,7 @@ class _mainpageState extends State<mainpage> {
   Dio dio = Dio();
 
 
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
   Future<void> createlist(String token) async {
     String url = "https://mambaout.xyz/getJournalsByUid";
     dio.options.baseUrl = url;
@@ -112,6 +114,27 @@ class _mainpageState extends State<mainpage> {
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
     print(total);
     print("$_year" + "-" + "$_month" + "-" + "$nowday");
+  }
+
+  _createlist(){
+    return this._memoizer.runOnce(() async{
+      String url = "https://mambaout.xyz/getJournalsByUid";
+      dio.options.baseUrl = url;
+      dio.options.headers['token'] = token;
+      Map<String, dynamic> map = Map();
+      map['page'] = 1;
+      map['pageSize'] = 100;
+      map['journalTitle'] = "";
+      map['range'] = 0;
+      map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
+      Response response = await dio.get(url, queryParameters: map);
+      _get = Get.fromJson(response.data);
+
+      print(inside);
+      print('aaaaaaaaaaaaaaaaaaaaaaaaa');
+      print(total);
+      print("$_year" + "-" + "$_month" + "-" + "$nowday");
+    });
   }
 
   String token;
@@ -746,7 +769,11 @@ class _mainpageState extends State<mainpage> {
                   Navigator.push(
                       context,
                       SlideRoute(page: editorpage(
-                        token: token,)));
+                        token: token,))).then((value) {
+                          setState(() {
+
+                          });
+                  });
                 },
                 elevation: 0,
                 backgroundColor: Color(0xFF7B9F4D),

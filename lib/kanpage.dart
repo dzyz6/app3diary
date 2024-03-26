@@ -3,6 +3,7 @@ import 'package:diary/editorpage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'gaipage.dart';
 import 'sizecontrol.dart';
 import 'dioclass.dart';
 import 'package:dio/dio.dart';
@@ -75,7 +76,7 @@ class _KanpageState extends State<Kanpage> {
 
 
   Future<void> delete(String token,String id) async {
-    String url = "https://mambaout.xyz//modifyJournal";
+    String url = "https://mambaout.xyz/modifyJournal";
 
     dio.options.headers['token'] = token;
     Map<String, dynamic> map = Map();
@@ -149,39 +150,45 @@ class _KanpageState extends State<Kanpage> {
                     inside = "";
                   }
 
-                  return GestureDetector(
-                    onTap: (){
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (context) =>
-                                  editorpage(token: token,
-                                    )));
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                              begin: Alignment.center,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.white, Color(0xFFEFFCDE)])),
-                      child: Column(
-                        children: [
-                          Divider(
-                            height: Adapt.pt(2),
-                            color: Color(0xFFE3E3E3),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                itemCount: total,
-                                itemExtent: Adapt.pt(80),
-                                itemBuilder: (BuildContext context, int index) {
-                                  inside = _get.data!.records[index].journalText;
-                                  var time = _get.data!.records[index].createdAt;
-                                  var creattime = time.substring(12, 14);
-                                  var creattime2 = time.substring(15, 17);
-                                  SlidableController _slidableController=SlidableController();
-                                  return Slidable(
+                  return Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.center,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.white, Color(0xFFEFFCDE)])),
+                    child: Column(
+                      children: [
+                        Divider(
+                          height: Adapt.pt(2),
+                          color: Color(0xFFE3E3E3),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: total,
+                              itemExtent: Adapt.pt(80),
+                              itemBuilder: (BuildContext context, int index) {
+                                inside = _get.data!.records[index].journalText;
+                                var time = _get.data!.records[index].createdAt;
+                                var creattime = time.substring(12, 14);
+                                var creattime2 = time.substring(15, 17);
+                                SlidableController _slidableController=SlidableController();
+
+                                return GestureDetector(
+                                  onTap: (){
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (context) =>
+                                                gaipage(token: token,inside: _get.data!.records[index].journalText,id: _get.data!.records[index].journalId,
+                                                ))).then((value) {
+                                                  setState(() {
+
+                                                  });
+
+                                    });
+                                  },
+                                  child: Slidable(
                                     actionPane: SlidableDrawerActionPane(),
                                     secondaryActions: [
                                         IconSlideAction(
@@ -189,10 +196,11 @@ class _KanpageState extends State<Kanpage> {
                                             "删除",
                                           iconWidget: IconButton(
                                             icon: Icon(Icons.delete),
-                                            onPressed: (){
-                                              delete(token, _get.data!.records[index].journalId.toString());
-                                              print(_get.data!.records[index].journalId.toString());
+                                            onPressed: ()async{
+                                              await delete(token, _get.data!.records[index].journalId.toString());
+                                              setState(() {
 
+                                              });
                                             },
                                           ),
                                           color: Colors.red,
@@ -341,7 +349,6 @@ class _KanpageState extends State<Kanpage> {
                                               size: Adapt.pt(20),
                                             )),
                                         color: Colors.green,
-
                                       )
                                       ],
                                     controller: _slidableController,
@@ -349,11 +356,9 @@ class _KanpageState extends State<Kanpage> {
                                     actionExtentRatio: 0.15,
                                       dismissal:SlidableDismissal(child: SlidableDrawerDismissal(),
                                           dismissThresholds: <SlideActionType, double>{
-
                                             SlideActionType.primary: 1.0,
                                             SlideActionType.secondary: 1.0,
                                           },
-
                                           onDismissed:(actionType){
                                         print("66666");
                                           },
@@ -461,12 +466,12 @@ class _KanpageState extends State<Kanpage> {
                                         )
                                       ],
                                     ),
-                                  );
-                                  ;
-                                }),
-                          )
-                        ],
-                      ),
+                                  ),
+                                );
+                                ;
+                              }),
+                        )
+                      ],
                     ),
                   );
                 case ConnectionState.none:

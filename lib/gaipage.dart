@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:dio/dio.dart';
 import 'user.dart';
 
-var textcontroller;
+var textcontroller=TextEditingController();
 
 /// 位置服务
 Future _determinePosition() async {
@@ -57,6 +57,8 @@ Future _determinePosition() async {
 
 XFile? imagepath;
 ImagePicker picker = ImagePicker();
+Dio dio=Dio();
+
 
 String formatTime(String time) {
   return time.padLeft(2, '0');
@@ -64,18 +66,34 @@ String formatTime(String time) {
 
 
 
-class editorpage extends StatefulWidget {
-  const editorpage({Key? key, required this.token}) : super(key: key);
-
+class gaipage extends StatefulWidget {
+  const gaipage({Key? key, required this.token,required this.inside,required this.id}) : super(key: key);
   final String token;
+  final String inside;
+  final int id;
 
   @override
-  State<editorpage> createState() => _editorpageState(token: token);
+  State<gaipage> createState() => _gaiState(token: token,inside: inside,id: id);
 }
 
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
-class _editorpageState extends State<editorpage> {
+class _gaiState extends State<gaipage> {
+
+  Future<void> putlist(String token,int id) async {
+    String url = "https://mambaout.xyz/modifyJournal";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map["journalId"] = id;
+    map["journalTitle"] = "";
+    map["journalText"] =textcontroller.text;
+    map["topJournal"] = 0;
+    map["isDeleted"]=0;
+    Response response = await dio.put(url, data: map);
+
+    print(response);
+  }
 
 
   List<XFile> imagePaths = [];
@@ -86,7 +104,6 @@ class _editorpageState extends State<editorpage> {
     setState(() {
       currentImageIndex=index;
       imagePaths.removeAt(currentImageIndex);
-
     });
 
   }
@@ -96,8 +113,8 @@ class _editorpageState extends State<editorpage> {
   var editor = Editor();
 
   String token;
-
-
+  int id;
+  String inside;
 
 
   Future<void> pickimage() async {
@@ -112,12 +129,12 @@ class _editorpageState extends State<editorpage> {
     }
   }
 
-  _editorpageState({required this.token});
+  _gaiState({required this.token,required this.inside,required this.id});
 
   @override
   void initState() {
     super.initState();
-    textcontroller = TextEditingController();
+    textcontroller = TextEditingController(text:inside);
     textcontroller.addListener(() {});
     print(token);
   }
@@ -134,7 +151,7 @@ class _editorpageState extends State<editorpage> {
               width: Adapt.pt(95),
             ),
             Text(
-              "新建日记",
+              "编辑日记",
               style: TextStyle(color: Colors.white),
             ),
           ],
@@ -168,74 +185,7 @@ class _editorpageState extends State<editorpage> {
               SizedBox(
                 height: Adapt.pt(10),
               ),
-              Container(
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: datetime.month.toString(),
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: "月",
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: datetime.day.toString(),
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: "日",
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: "  ", // SizedBox的宽度转换为空格
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: "星期",
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: a[datetime.weekday - 1],
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: "  ", // SizedBox的宽度转换为空格
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: datetime.hour.toString(),
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: ":",
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: "  ", // SizedBox的宽度转换为空格
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                      TextSpan(
-                        text: formatTime(datetime.minute.toString()),
-                        style: TextStyle(
-                            fontSize: Adapt.pt(20), color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+
               SizedBox(
                 height: Adapt.pt(10),
               ),
@@ -337,11 +287,12 @@ class _editorpageState extends State<editorpage> {
               width: Adapt.pt(195),
             ),
             IconButton(
-                onPressed: () {
+                onPressed: () async{
                   if (textcontroller.text.toString() != null &&
                       textcontroller.text.toString() != "") {
-                    editor.tokenTest(token,imagePaths);
                     FocusScope.of(context).unfocus();
+                    await putlist(token, id);
+
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pop(context);
                     });

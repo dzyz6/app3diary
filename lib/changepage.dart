@@ -1,19 +1,26 @@
 import 'package:diary/backgroundpage.dart';
+import 'package:diary/persondio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'sizecontrol.dart';
 import 'package:image_picker/image_picker.dart';
 
 class changepage extends StatefulWidget {
-  const changepage({super.key});
+  const changepage({Key? key, required this.token}) : super(key: key);
+  final String token;
 
   @override
-  State<changepage> createState() => _changepageState();
+  State<changepage> createState() => _changepageState(token: token);
 }
 
 class _changepageState extends State<changepage> {
+  String token;
 
-  String? imagepath;
-  String? imagepath2;
+
+  _changepageState({required this.token});
+
+  XFile? imagepath;
+  XFile? imagepath2;
   String? value;
 
   final ImagePicker picker = new ImagePicker();
@@ -23,7 +30,7 @@ class _changepageState extends State<changepage> {
     final openalbum =  await picker.pickImage(source: ImageSource.gallery);
 
     if(openalbum!=null){
-      imagepath=openalbum.path;
+      imagepath=openalbum;
     }
 
   }
@@ -32,11 +39,36 @@ class _changepageState extends State<changepage> {
   //拍照
   final takephoto = await picker.pickImage(source: ImageSource.camera);
   if(takephoto!=null){
-  imagepath2=takephoto.path;
+  imagepath2=takephoto;
   }
 }
 
+  Future<void> ChangeBImage(String token,XFile image) async {
+    var attfile ;
+    Future<FormData> FormData1() async {
+
+      attfile = await MultipartFile.fromFile(image.path,filename: image.name);
+
+      return FormData.fromMap({
+        'file': attfile,
+      });
+
+    }
+    FormData fromdata = await FormData1() ;
+    Dio dio = Dio();
+    String url = "https://mambaout.xyz/uploadUserBackgroundImage";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Response response = await dio.post(url,data: fromdata);
+
+    print(response);
+
+  }
+
+
+
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -90,9 +122,10 @@ class _changepageState extends State<changepage> {
             ),
             GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: (){
-                pickimage();
-
+              onTap: ()async{
+                await pickimage();
+                await ChangeBImage(token, imagepath!);
+                Navigator.of(context).pop();
               },
               child: Container(
                   child: Row(
@@ -110,10 +143,10 @@ class _changepageState extends State<changepage> {
               color: Color(0xFFD7D7D7),
             ),
             GestureDetector(
-              onTap: (){
-                takeimage();
-                value=imagepath2;
-                Navigator.of(context).pop(value);
+              onTap: ()async{
+                await takeimage();
+                await ChangeBImage(token, imagepath2!);
+                Navigator.of(context).pop();
               },
               behavior: HitTestBehavior.opaque,
               child: Container(

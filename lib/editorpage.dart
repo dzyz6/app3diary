@@ -333,15 +333,14 @@ class _editorpageState extends State<editorpage> {
                 },
                 icon: Icon(Icons.image)),
             IconButton(onPressed: () {}, icon: Icon(Icons.mic_none_rounded)),
-            SizedBox(
-              width: Adapt.pt(195),
-            ),
+            Expanded(child: Container(),),
             IconButton(
-                onPressed: () {
+                onPressed: () async{
                   if (textcontroller.text.toString() != null &&
                       textcontroller.text.toString() != "") {
-                    editor.tokenTest(token,imagePaths);
                     FocusScope.of(context).unfocus();
+                    await editor.tokenTest(token,imagePaths);
+
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pop(context);
                     });
