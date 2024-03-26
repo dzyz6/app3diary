@@ -364,7 +364,7 @@ class DiaryLine extends StatefulWidget {
 }
 
 class _DiaryLineState extends State<DiaryLine> {
-  var imagelist;
+  late ImagesofDIary imagelist;
   Future<void> getImage() async {
     int a = getDiaryofDiarys.diarys.data![widget.index].journalId!;
     Dio dio = Dio();
@@ -374,13 +374,21 @@ class _DiaryLineState extends State<DiaryLine> {
     Map<String, dynamic> map = Map();
     map['journalId'] = a;
     Response response = await dio.get(url, queryParameters: map);
-    imagelist = response.data;   
+    imagelist = ImagesofDIary.fromJson(response.data);   
     print(response.data); 
     setState(() {
-          if (imagelist.length == 0) {
+    if (imagelist.data?.length == 0) {
         _diarys.removeAt(0);
       } else {
         _diarys.removeAt(0);
+        for (var i = 0; i < imagelist.data!.length; i++) {
+          _diarys.add(Container(
+      margin: EdgeInsets.only(top: 5),
+      child: Image.network(imagelist.data![i].pictureUrl!),
+      width: 200,
+      height: 200,
+    ),);
+        }
       }
     });
   }
@@ -410,6 +418,9 @@ class _DiaryLineState extends State<DiaryLine> {
   }
 
   Widget build(BuildContext context) {
+    setState(() {
+      
+    });
     return Container(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,14 +441,7 @@ class _DiaryLineState extends State<DiaryLine> {
                       style: TextStyle(fontSize: 17),
                     ),
                     Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top: 5),
-                          child: Image.asset(image2),
-                          width: 200,
-                          height: 200,
-                        ),
-                      ],
+                      children: _diarys
                     ),
                   ]),
             ),
@@ -512,7 +516,7 @@ class _ChuanLineState extends State<ChuanLine> {
           child: DiaryLine(
             index: index,
           ),
-          foregroundPainter: CirclePainter(500),
+          foregroundPainter: CirclePainter(1000),
         );
       },
     );
@@ -658,4 +662,67 @@ class _Diarychuan2State extends State<Diarychuan2> {
       ),
     );
   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class ImagesofDIary {
+    int? code;
+    String? message;
+    List<Data>? data;
+
+    ImagesofDIary({this.code, this.message, this.data});
+
+    ImagesofDIary.fromJson(Map<String, dynamic> json) {
+        code = json["code"];
+        message = json["message"];
+        data = json["data"] == null ? null : (json["data"] as List).map((e) => Data.fromJson(e)).toList();
+    }
+
+    Map<String, dynamic> toJson() {
+        final Map<String, dynamic> _data = <String, dynamic>{};
+        _data["code"] = code;
+        _data["message"] = message;
+        if(data != null) {
+            _data["data"] = data?.map((e) => e.toJson()).toList();
+        }
+        return _data;
+    }
+}
+
+class Data {
+    String? pictureId;
+    String? pictureUrl;
+
+    Data({this.pictureId, this.pictureUrl});
+
+    Data.fromJson(Map<String, dynamic> json) {
+        pictureId = json["pictureId"];
+        pictureUrl = json["pictureUrl"];
+    }
+
+    Map<String, dynamic> toJson() {
+        final Map<String, dynamic> _data = <String, dynamic>{};
+        _data["pictureId"] = pictureId;
+        _data["pictureUrl"] = pictureUrl;
+        return _data;
+    }
 }
