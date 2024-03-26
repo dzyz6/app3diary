@@ -107,6 +107,18 @@ class _diarypageState extends State<diarypage> {
     _get2 = Getpicture.fromJson(response.data);
   }
 
+  Future<void> delete(String token,String id) async {
+    String url = "https://mambaout.xyz/modifyJournal";
+
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map['journalId'] = id;
+    map['isDeleted']='1';
+
+    Response response = await dio.put(url, data: map);
+    print(response);
+  }
+
   Future<void> getUserMessage(String token) async {
     Dio dio = Dio();
     String url = "https://mambaout.xyz/getUserInfo";
@@ -373,7 +385,7 @@ class _diarypageState extends State<diarypage> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return Container(
-                                                  height: Adapt.pt(200),
+                                                  height: Adapt.hpt(200),
                                                   width: double.infinity,
                                                   decoration: BoxDecoration(
                                                     color: Colors.white,
@@ -522,7 +534,7 @@ class _diarypageState extends State<diarypage> {
                                               context: context,
                                               builder: (BuildContext context) {
                                                 return Container(
-                                                  height: Adapt.pt(200),
+                                                  height: Adapt.hpt(130),
                                                   width: double.infinity,
                                                   decoration: BoxDecoration(
                                                     color: Colors.white,
@@ -541,7 +553,7 @@ class _diarypageState extends State<diarypage> {
                                                       GestureDetector(
                                                         child: Container(
                                                           child: Text(
-                                                            "查看日记",
+                                                            "编辑日记",
                                                             style: TextStyle(
                                                                 fontSize:
                                                                     Adapt.pt(
@@ -556,9 +568,10 @@ class _diarypageState extends State<diarypage> {
                                                         color: Colors.grey,
                                                       ),
                                                       GestureDetector(
+
                                                         child: Container(
                                                           child: Text(
-                                                            "编辑日记",
+                                                            "删除日记",
                                                             style: TextStyle(
                                                                 fontSize:
                                                                     Adapt.pt(
@@ -568,29 +581,22 @@ class _diarypageState extends State<diarypage> {
                                                               EdgeInsets.all(
                                                                   Adapt.pt(10)),
                                                         ),
+                                                        onTap: ()async{
+                                                          await delete(token, _get.data!.records[index].journalId.toString());
+                                                          Navigator.of(context).pop();
+
+                                                        },
                                                       ),
-                                                      Divider(
-                                                        color: Colors.grey,
-                                                      ),
-                                                      GestureDetector(
-                                                        child: Container(
-                                                          child: Text(
-                                                            "置顶该日记",
-                                                            style: TextStyle(
-                                                                fontSize:
-                                                                    Adapt.pt(
-                                                                        18)),
-                                                          ),
-                                                          margin:
-                                                              EdgeInsets.all(
-                                                                  Adapt.pt(10)),
-                                                        ),
-                                                      ),
+
                                                     ],
                                                   ),
                                                 );
                                               },
-                                            );
+                                            ).then((value) {
+                                              setState(() {
+
+                                              });
+                                            });
                                           },
                                           icon: Icon(
                                             Icons.more_horiz,
