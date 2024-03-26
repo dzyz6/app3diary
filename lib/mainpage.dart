@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:async/async.dart';
 import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';

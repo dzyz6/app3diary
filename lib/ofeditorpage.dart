@@ -55,7 +55,7 @@ Future _determinePosition() async {
   }
 }
 
-String? imagepath;
+XFile? imagepath;
 ImagePicker picker = ImagePicker();
 
 String formatTime(String time) {
@@ -65,13 +65,12 @@ String formatTime(String time) {
 
 
 class Ofeditorpage extends StatefulWidget {
-  const Ofeditorpage({Key? key, required this.token, required this.diaryid}) : super(key: key);
+  const Ofeditorpage({Key? key, required this.token,required this.diaryid}) : super(key: key);
 
   final String token;
   final String diaryid;
-
   @override
-  State<Ofeditorpage> createState() => _OfeditorpageState(token: token,diaryid: diaryid);
+  State<Ofeditorpage> createState() => _OfeditorpageState(token: token);
 }
 
 List a = ["一", "二", "三", "四", "五", "六", "天"];
@@ -79,7 +78,7 @@ List a = ["一", "二", "三", "四", "五", "六", "天"];
 class _OfeditorpageState extends State<Ofeditorpage> {
 
 
-  List<String> imagePaths = [];
+  List<XFile> imagePaths = [];
 
   int currentImageIndex = 0;
 
@@ -97,7 +96,7 @@ class _OfeditorpageState extends State<Ofeditorpage> {
   var editor = Editor();
 
   String token;
-  String diaryid;
+
 
 
 
@@ -107,13 +106,13 @@ class _OfeditorpageState extends State<Ofeditorpage> {
 
     if (openalbum != null) {
       setState(() {
-        imagepath = openalbum.path;
+        imagepath = openalbum;
         imagePaths.add(imagepath!);
       });
     }
   }
 
-  _OfeditorpageState({required this.token,required this.diaryid});
+  _OfeditorpageState({required this.token});
 
   @override
   void initState() {
@@ -285,7 +284,7 @@ class _OfeditorpageState extends State<Ofeditorpage> {
                               alignment: Alignment.center,
                               children: [
                                 Container(
-                                  child: Image.file(File(imagePaths[index]),fit: BoxFit.cover,),
+                                  child: Image.file(File(imagePaths[index].path),fit: BoxFit.cover,),
                                   padding: EdgeInsets.all(Adapt.pt(5)),
                                 ),
                                 Positioned(
@@ -334,14 +333,142 @@ class _OfeditorpageState extends State<Ofeditorpage> {
                 },
                 icon: Icon(Icons.image)),
             IconButton(onPressed: () {}, icon: Icon(Icons.mic_none_rounded)),
-            SizedBox(
-              width: Adapt.pt(195),
-            ),
+            Expanded(child: Container(),),
             IconButton(
-                onPressed: () {
+                onPressed: () async{
                   if (textcontroller.text.toString() != null &&
                       textcontroller.text.toString() != "") {
-                    editor.ofDiarys(token,diaryid);
+                    FocusScope.of(context).unfocus();
+                    await editor.ofDiarys(token,widget.diaryid,imagePaths);
+
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      Navigator.pop(context);
+                    });
+                  } else {
+                    showGeneralDialog(
+                        context: context,
+                        pageBuilder: (BuildContext context,
+                            Animation<double> animation,
+                            Animation<double> secondaryAnimation) {
+                          return AlertDialog(
+                            content: Container(
+                                height: Adapt.pt(40),
+                                child: Center(
+                                    child: Text(
+                                  "请填写内容૮꒰ ˶• ༝ •˶꒱ა",
+                                  style: TextStyle(fontSize: Adapt.pt(20)),
+                                ))),
+                            actions: [
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Container(
+                                    child: Text(
+                                      "好的捏",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Color(0xFF7B9F4D),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(Adapt.pt(20)))),
+                                    padding: EdgeInsets.all(Adapt.pt(10)),
+                                  ))
+                            ],
+                          );
+                        });
+                  }
+                },
+                icon: Icon(Icons.check)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Editor {
+  Editor();
+  Future<void> tokenTest(String token,List<XFile> files) async {
+    // 创建 Dio 实例
+    Dio dio = Dio();
+    // 设置请求的 URL（注意：您不需要在这里设置 baseUrl，因为我们会直接在 post 方法中传入完整的 URL）
+    String url = "https://mambaout.xyz/createJournal";
+
+
+    // 创建 FormData 对象
+      FormData formData = FormData.fromMap({
+        'location': '1',
+        'journalTitle': '',
+        'journalText': textcontroller.text,
+        'topJournal': '0',
+      });
+
+    for (int i = 0; i < files.length; i++) {
+        MultipartFile multipartFile = await MultipartFile.fromFile(files[i].path, filename: files[i].name);
+        formData.files.add(MapEntry('files', multipartFile));
+    }
+    // 设置请求头
+    Options options = Options(
+        headers: {
+          'token': token, // 设置认证 token
+        }
+    );
+
+    // 发送 POST 请求
+    try {
+      Response response = await dio.post(url, data: formData, options: options);
+      print(response); // 打印服务器返回的数据
+      print(formData.files);
+      print('请求成功');
+    } catch (e) {
+      // 错误处理
+      print('请求失败: $e');
+    }
+  }
+  
+  Future<void> ofDiarys(String token,String journalGroupCount,List<XFile> files) async {
+    // 创建 Dio 实例
+    Dio dio = Dio();
+
+
+    // 设置请求的 URL（注意：您不需要在这里设置 baseUrl，因为我们会直接在 post 方法中传入完整的 URL）
+    String url = "https://mambaout.xyz/createJournalAtJournalGroup";
+
+    // 创建 FormData 对象
+      FormData formData = FormData.fromMap({
+        'location': '1', // 假设 location 是一个字符串
+        'journalTitle': '', // 如果 journalTitle 是可选的并且没有值，可以留空
+        'journalText': textcontroller.text, // 使用 TextEditingController 的 text 属性
+        'topJournal': '0',
+        'journalGroupIdAt':journalGroupCount,  // 假设 topJournal 是一个字符串格式的整数
+      });
+
+    for (int i = 0; i < files.length; i++) {
+        MultipartFile multipartFile = await MultipartFile.fromFile(files[i].path, filename: files[i].name);
+        formData.files.add(MapEntry('files', multipartFile));
+    }
+
+
+    // 设置请求头
+    Options options = Options(
+        headers: {
+          'token': token, // 设置认证 token
+        }
+    );
+
+    // 发送 POST 请求
+    try {
+      Response response = await dio.post(url, data: formData, options: options);
+      print(response.data); // 打印服务器返回的数据
+      print('请求成功');
+    } catch (e) {
+      // 错误处理
+      print('请求失败: $e');
+    }
+  }
+}
+              /*      editor.ofDiarys(token,diaryid);
                     FocusScope.of(context).unfocus();
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pop(context);
@@ -468,4 +595,4 @@ class Editor {
       print('请求失败: $e');
     }
   }
-}
+}*/
