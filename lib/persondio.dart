@@ -17,7 +17,7 @@ attfile = await MultipartFile.fromFile(image.path,filename: image.name);
     }
     FormData fromdata = await FormData1() ;
   Dio dio = Dio();
-  String url = "http://8.130.98.175/uploadUserProfilePicture";
+  String url = "http://mambaout.xyz/uploadUserProfilePicture";
   dio.options.baseUrl = url;
   dio.options.headers['token'] = token;
   Response response = await dio.post(url,data: fromdata);
@@ -27,7 +27,7 @@ attfile = await MultipartFile.fromFile(image.path,filename: image.name);
 }
 Future<void> ChangeReadyImage(String token,int imagenum) async {
   Dio dio = Dio();
-  String url = "http://8.130.98.175/setDefaultPictureByNum";
+  String url = "http://mambaout.xyz/setDefaultPictureByNum";
   dio.options.baseUrl = url;
   dio.options.headers['token'] = token;
    Map<String,dynamic> map = Map();
@@ -41,7 +41,7 @@ Future<void> ChangeReadyImage(String token,int imagenum) async {
 
 Future<void> ChangeNickName(String token,String nickname) async {
   Dio dio = Dio();
-  String url = "http://8.130.98.175/changeUserInfo";
+  String url = "http://mambaout.xyz/changeUserInfo";
   dio.options.baseUrl = url;
   dio.options.headers['token'] = token;
    Map<String,dynamic> map = Map();
@@ -55,7 +55,7 @@ Future<void> ChangeNickName(String token,String nickname) async {
 
 Future<bool> logout(String token) async {
   Dio dio = Dio();
-  String url = "http://8.130.98.175/logout";
+  String url = "http://mambaout.xyz/logout";
   dio.options.baseUrl = url;
   dio.options.headers['token'] = token;
   Response response = await dio.get(url);
@@ -71,7 +71,7 @@ class GetUserMessage {
   GetUserMessage(String token);
 Future<void> getUserMessage(String token) async {
   Dio dio = Dio();
-  String url = "http://8.130.98.175/getUserInfo";
+  String url = "http://mambaout.xyz/getUserInfo";
   dio.options.baseUrl = url;
   dio.options.headers['token'] = token;
   Response response = await dio.get(url);

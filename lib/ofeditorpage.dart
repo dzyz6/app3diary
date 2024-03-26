@@ -55,7 +55,7 @@ Future _determinePosition() async {
   }
 }
 
-XFile? imagepath;
+String? imagepath;
 ImagePicker picker = ImagePicker();
 
 String formatTime(String time) {
@@ -64,21 +64,22 @@ String formatTime(String time) {
 
 
 
-class editorpage extends StatefulWidget {
-  const editorpage({Key? key, required this.token}) : super(key: key);
+class Ofeditorpage extends StatefulWidget {
+  const Ofeditorpage({Key? key, required this.token, required this.diaryid}) : super(key: key);
 
   final String token;
+  final String diaryid;
 
   @override
-  State<editorpage> createState() => _editorpageState(token: token);
+  State<Ofeditorpage> createState() => _OfeditorpageState(token: token,diaryid: diaryid);
 }
 
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
-class _editorpageState extends State<editorpage> {
+class _OfeditorpageState extends State<Ofeditorpage> {
 
 
-  List<XFile> imagePaths = [];
+  List<String> imagePaths = [];
 
   int currentImageIndex = 0;
 
@@ -96,7 +97,7 @@ class _editorpageState extends State<editorpage> {
   var editor = Editor();
 
   String token;
-
+  String diaryid;
 
 
 
@@ -106,13 +107,13 @@ class _editorpageState extends State<editorpage> {
 
     if (openalbum != null) {
       setState(() {
-        imagepath = openalbum;
+        imagepath = openalbum.path;
         imagePaths.add(imagepath!);
       });
     }
   }
 
-  _editorpageState({required this.token});
+  _OfeditorpageState({required this.token,required this.diaryid});
 
   @override
   void initState() {
@@ -284,7 +285,7 @@ class _editorpageState extends State<editorpage> {
                               alignment: Alignment.center,
                               children: [
                                 Container(
-                                  child: Image.file(File(imagePaths[index].path),fit: BoxFit.cover,),
+                                  child: Image.file(File(imagePaths[index]),fit: BoxFit.cover,),
                                   padding: EdgeInsets.all(Adapt.pt(5)),
                                 ),
                                 Positioned(
@@ -333,14 +334,15 @@ class _editorpageState extends State<editorpage> {
                 },
                 icon: Icon(Icons.image)),
             IconButton(onPressed: () {}, icon: Icon(Icons.mic_none_rounded)),
-            Expanded(child: Container(),),
+            SizedBox(
+              width: Adapt.pt(195),
+            ),
             IconButton(
-                onPressed: () async{
+                onPressed: () {
                   if (textcontroller.text.toString() != null &&
                       textcontroller.text.toString() != "") {
+                    editor.ofDiarys(token,diaryid);
                     FocusScope.of(context).unfocus();
-                    await editor.tokenTest(token,imagePaths);
-
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pop(context);
                     });
@@ -389,25 +391,28 @@ class _editorpageState extends State<editorpage> {
 
 class Editor {
   Editor();
-  Future<void> tokenTest(String token,List<XFile> files) async {
+
+  var user = Users();
+
+  Future<void> tokenTest(String token) async {
     // 创建 Dio 实例
     Dio dio = Dio();
+
+
     // 设置请求的 URL（注意：您不需要在这里设置 baseUrl，因为我们会直接在 post 方法中传入完整的 URL）
     String url = "https://mambaout.xyz/createJournal";
 
-
     // 创建 FormData 对象
       FormData formData = FormData.fromMap({
-        'location': '1',
-        'journalTitle': '',
-        'journalText': textcontroller.text,
-        'topJournal': '0',
+        'location': '1', // 假设 location 是一个字符串
+        'journalTitle': '', // 如果 journalTitle 是可选的并且没有值，可以留空
+        'journalText': textcontroller.text, // 使用 TextEditingController 的 text 属性
+        'topJournal': '0', // 假设 topJournal 是一个字符串格式的整数
       });
 
-    for (int i = 0; i < files.length; i++) {
-        MultipartFile multipartFile = await MultipartFile.fromFile(files[i].path, filename: files[i].name);
-        formData.files.add(MapEntry('files', multipartFile));
-    }
+
+
+
     // 设置请求头
     Options options = Options(
         headers: {
@@ -418,8 +423,7 @@ class Editor {
     // 发送 POST 请求
     try {
       Response response = await dio.post(url, data: formData, options: options);
-      print(response); // 打印服务器返回的数据
-      print(formData.files);
+      print(response.data); // 打印服务器返回的数据
       print('请求成功');
     } catch (e) {
       // 错误处理
@@ -465,8 +469,3 @@ class Editor {
     }
   }
 }
-
-
-
-
-

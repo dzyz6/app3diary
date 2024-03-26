@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:async/async.dart';
 import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/diarychuan.dart';
 import 'package:diary/diarypage.dart';
@@ -30,6 +29,83 @@ String? inside="";
 //获取时间
 DateTime dateTime = DateTime.now();
 
+Widget getItem(int index) {
+  return GestureDetector(
+    onTap: () {
+
+    },
+    child: Column(
+      children: [
+        Container(
+          height: Adapt.pt(79),
+          child:
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(width: Adapt.pt(20),),
+              Column(
+
+                children: [
+                  SizedBox(
+                    height: Adapt.pt(15),
+                  ),
+                  RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: "$nowday",
+                          style: TextStyle(
+                              fontSize: Adapt.pt(25), color: Colors.black)),
+                      TextSpan(
+                          text: "$_month",
+                          style: TextStyle(
+                              fontSize: Adapt.pt(15), color: Colors.black)
+                      ),
+                      TextSpan(
+                          text: "月",
+                          style: TextStyle(
+                              fontSize: Adapt.pt(13), color: Colors.black)
+                      ),
+
+                    ]),
+                  ),
+
+                  RichText(text: TextSpan(
+                      children: [
+                        TextSpan(
+                            text: "星期",
+                            style: TextStyle(
+                                fontSize: Adapt.pt(12), color: Colors.black)
+                        ),
+                        TextSpan(
+                          text: a[DateTime(_year, _month, nowday).weekday - 1],
+                          style: TextStyle(
+                              fontSize: Adapt.pt(12), color: Colors.black),
+                        ),
+                      ]
+                  )),
+
+                ],
+
+
+              ),
+              RichText(text: TextSpan(children: [
+                TextSpan(
+                  text: "$inside", style: TextStyle(
+                    fontSize: Adapt.pt(12), color: Colors.black),
+                )
+              ]))
+            ],
+          ),
+
+        ),
+        Divider(
+          height: Adapt.pt(1),
+          color: Color(0xFFE3E3E3),
+        )
+      ],
+    ),
+  );
+}
 
 int nowday = dateTime.day;
 
@@ -265,6 +341,7 @@ class _mainpageState extends State<mainpage> {
                               _year = p.year as int;
                               firstDayOfMonth = DateTime(_year, _month, 1);
                               lastDayOfMonth = DateTime(_year, _month + 1, 0);
+                              _itemStatuses = List.generate(42, (_) => false);
                               _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
                               total = 0;
                             });
@@ -724,7 +801,7 @@ class _mainpageState extends State<mainpage> {
           ),
 
           diarypage( token: token,),
-          Diarychuan(token),
+          Diarychuan(token:token),
           Person(token: token),
         ],
       ),

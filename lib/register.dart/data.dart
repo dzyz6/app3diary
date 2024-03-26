@@ -51,7 +51,7 @@ class RegisterFunction{
 var  user = Users();
 Future<void> tokenTest(String token)async {
     Dio dio =  Dio();
-    String url = "http://8.130.98.175:8080/createJournal";
+    String url = "http://mambaout.xyz/createJournal";
     dio.options.baseUrl=url;
     dio.options.headers['token']=token;
    Map<String,dynamic> map = Map();
@@ -67,7 +67,7 @@ Future<void> tokenTest(String token)async {
 
 
  Future <void> postFunctionR(String username,String password) async{
-    String url = "http://8.130.98.175/register";
+    String url = "http://mambaout.xyz/register";
     Dio dio =  Dio();
     dio.options.baseUrl=url;
     dio.options.headers.addAll({'token':user.data?.token});
@@ -82,7 +82,7 @@ Future<void> tokenTest(String token)async {
   }
 }
 Future<String> GetFuction() async{
-    String url = "http://8.130.98.175/userAgreement";
+    String url = "http://mambaout.xyz/userAgreement";
     Dio dio = new Dio();
     dio.options.baseUrl=url;
     Response response = await dio.get(url);
