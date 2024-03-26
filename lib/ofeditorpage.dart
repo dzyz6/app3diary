@@ -64,18 +64,19 @@ String formatTime(String time) {
 
 
 
-class editorpage extends StatefulWidget {
-  const editorpage({Key? key, required this.token}) : super(key: key);
+class Ofeditorpage extends StatefulWidget {
+  const Ofeditorpage({Key? key, required this.token, required this.diaryid}) : super(key: key);
 
   final String token;
+  final String diaryid;
 
   @override
-  State<editorpage> createState() => _editorpageState(token: token);
+  State<Ofeditorpage> createState() => _OfeditorpageState(token: token,diaryid: diaryid);
 }
 
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
-class _editorpageState extends State<editorpage> {
+class _OfeditorpageState extends State<Ofeditorpage> {
 
 
   List<String> imagePaths = [];
@@ -96,7 +97,7 @@ class _editorpageState extends State<editorpage> {
   var editor = Editor();
 
   String token;
-
+  String diaryid;
 
 
 
@@ -112,7 +113,7 @@ class _editorpageState extends State<editorpage> {
     }
   }
 
-  _editorpageState({required this.token});
+  _OfeditorpageState({required this.token,required this.diaryid});
 
   @override
   void initState() {
@@ -340,7 +341,7 @@ class _editorpageState extends State<editorpage> {
                 onPressed: () {
                   if (textcontroller.text.toString() != null &&
                       textcontroller.text.toString() != "") {
-                    editor.tokenTest(token);
+                    editor.ofDiarys(token,diaryid);
                     FocusScope.of(context).unfocus();
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pop(context);
@@ -468,8 +469,3 @@ class Editor {
     }
   }
 }
-
-
-
-
-

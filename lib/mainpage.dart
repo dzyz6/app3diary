@@ -25,7 +25,7 @@ var colorclick = Color(0xFFDCEEC4);
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
 int total = 0;
-late String inside;
+String ?inside= '';
 //获取时间
 DateTime dateTime = DateTime.now();
 
@@ -779,7 +779,7 @@ class _mainpageState extends State<mainpage> {
           ),
 
           diarypage( token: token,),
-          Diarychuan(token),
+          Diarychuan(token:token),
           Person(token: token),
         ],
       ),

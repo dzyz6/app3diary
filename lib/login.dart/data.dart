@@ -12,7 +12,7 @@ class LoginFunction{
  var user =Users();
   LoginFunction();
  Future <void> postFunctionR(String username,String password) async{
-    String url = "http://8.130.98.175/login";
+    String url = "http://mambaout.xyz/login";
     Dio dio = new Dio();
     dio.options.baseUrl=url;
     Map<String,dynamic> map = Map();

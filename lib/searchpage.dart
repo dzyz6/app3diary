@@ -25,7 +25,7 @@ class _searchpageState extends State<searchpage> {
   var _get = Get();
   Dio dio = Dio();
 
-  late String inside;
+  late String inside="";
   int total = 0;
 
   Future<void> createlist(String token) async {
