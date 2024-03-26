@@ -39,7 +39,8 @@ class _DiarychuanState extends State<Diarychuan> {
   @override
   var page = 1;
   void futureini() async {
-    await getDiaryList.getofDiarys(widget.token, page).then((value) {
+    await getDiaryList.getofDiarys(widget.token, page).then((value) 
+    {
       setState(() {
         imageCardCreate(getDiaryList);
       });
@@ -357,14 +358,14 @@ class DiaryLine extends StatefulWidget {
   DiaryLine(
       {super.key,
       required this.index /*required this.diaryID,required this.text*/});
-
+  
   @override
   State<DiaryLine> createState() => _DiaryLineState();
 }
 
 class _DiaryLineState extends State<DiaryLine> {
   var imagelist;
-  void getImage() async {
+  Future<void> getImage() async {
     int a = getDiaryofDiarys.diarys.data![widget.index].journalId!;
     Dio dio = Dio();
     String url = "http://mambaout.xyz/getJournalPictures";
@@ -373,7 +374,15 @@ class _DiaryLineState extends State<DiaryLine> {
     Map<String, dynamic> map = Map();
     map['journalId'] = a;
     Response response = await dio.get(url, queryParameters: map);
-    imagelist = response.data;
+    imagelist = response.data;   
+    print(response.data); 
+    setState(() {
+          if (imagelist.length == 0) {
+        _diarys.removeAt(0);
+      } else {
+        _diarys.removeAt(0);
+      }
+    });
   }
 
   List<Widget> _diarys = [
@@ -395,13 +404,7 @@ class _DiaryLineState extends State<DiaryLine> {
     this.y2k = DateTime(int.parse(year), int.parse(month), int.parse(days));
 
     getImage();
-    setState(() {
-      /*    if (imagelist.length == 0) {
-        _diarys.removeAt(0);
-      } else {
-        _diarys.removeAt(0);
-      }*/
-    });
+
 
     super.initState();
   }
@@ -554,15 +557,11 @@ class TimeData extends StatelessWidget {
   var day;
   var weekday;
   @override
-  StatelessElement createElement() {
-    // TODO: implement createElement
+
+  Widget build(BuildContext context) {
     this.moon = time.month.toString() + '月';
     this.day = time.day.toString();
     this.weekday = week[time.weekday];
-    return super.createElement();
-  }
-
-  Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(
           left: Adapt.pt(20), right: Adapt.pt(50), top: Adapt.pt(20)),
