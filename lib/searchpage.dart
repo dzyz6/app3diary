@@ -1,5 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'assets/icon/my_flutter_app_icons.dart';
+import 'diarychuan.dart';
 import 'dioclass.dart';
+import 'gaipage.dart';
+import 'ofeditorpage.dart';
 import 'sizecontrol.dart';
 import 'package:dio/dio.dart';
 
@@ -55,6 +62,65 @@ class _searchpageState extends State<searchpage> {
     createlist(token);
   }
 
+  Future<void> delete(String token,String id) async {
+    String url = "https://mambaout.xyz/modifyJournal";
+
+    dio.options.headers['token'] = token;
+    Map<String, dynamic> map = Map();
+    map['journalId'] = id;
+    map['isDeleted']='1';
+
+    Response response = await dio.put(url, data: map);
+    print(response);
+  }
+
+  void showMessage(BuildContext context, String text) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("操作失败"),
+          content: Text(text),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("确定")),
+          ],
+        );
+      },
+    );
+  }
+  void showTureMessage(BuildContext context) {
+    showCupertinoDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("操作成功"),
+          content: Text('成功移除日记'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("确定")),
+          ],
+        );
+      },
+    );
+  }
+  Future<void> deleteDiary(String diaryid,String diarylistid) async {
+    Dio dio = Dio();
+    String url = "http://mambaout.xyz/deleteJournalFromJournalGroup";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String,dynamic> map = Map();
+    map['journalId']=diaryid;
+    map['journalGroupId']=diarylistid;
+    Response response = await dio.put(url,data: map);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +173,8 @@ class _searchpageState extends State<searchpage> {
               icon:Icon(Icons.cancel,color: Color(0xFFB4B4B4),),
               onPressed: () {
                 _textcirl.clear();
+                FocusScope.of(context).requestFocus();
+
               },
             )),
           ),
@@ -136,6 +204,7 @@ class _searchpageState extends State<searchpage> {
             padding: EdgeInsets.only(right: Adapt.pt(20)),
             child: GestureDetector(
               onTap: (){
+                FocusScope.of(context).unfocus();
                 setState(() {
 
                 });
@@ -176,12 +245,14 @@ class _searchpageState extends State<searchpage> {
                     inside = "";
                   }
                   int p=0;
+                  SlidableController _slidableController=SlidableController();
 
                   for(int i=0;i<total;i++){
                     if(_get.data!.records[i].journalText.indexOf(_textcirl.text)!=-1){
                       p++;
                     }
                   }
+
 
                   if(p!=0){
                     return ListView.builder(
@@ -198,98 +269,381 @@ class _searchpageState extends State<searchpage> {
                             return GestureDetector(
                               behavior: HitTestBehavior.translucent,
                               onTap: () {
-                              },
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: Adapt.pt(79),
-                                    child: Row(
-                                      children: [
-                                        SizedBox(
-                                          width: Adapt.pt(20),
-                                        ),
-                                        Column(
-                                          children: [
-                                            SizedBox(
-                                              height: Adapt.pt(15),
-                                            ),
-                                            RichText(
-                                              text: TextSpan(children: [
-                                                TextSpan(
-                                                    text: "$creattimeday",
-                                                    style: TextStyle(
-                                                        fontSize: Adapt.pt(25),
-                                                        color: Colors.black)),
-                                                TextSpan(
-                                                    text: "$creattimemonth",
-                                                    style: TextStyle(
-                                                        fontSize: Adapt.pt(15),
-                                                        color: Colors.black)),
-                                                TextSpan(
-                                                    text: "月",
-                                                    style: TextStyle(
-                                                        fontSize: Adapt.pt(13),
-                                                        color: Colors.black)),
-                                              ]),
-                                            ),
-                                            RichText(
-                                                text: TextSpan(children: [
-                                                  TextSpan(
-                                                      text: "星期",
-                                                      style: TextStyle(
-                                                          fontSize: Adapt.pt(12),
-                                                          color: Colors.black)),
-                                                  TextSpan(
-                                                    text: a[
-                                                    DateTime(int.parse(creattimeyear), int.parse(creattimemonth), int.parse(creattimeday))
-                                                        .weekday -
-                                                        1],
-                                                    style: TextStyle(
-                                                        fontSize: Adapt.pt(12),
-                                                        color: Colors.black),
-                                                  ),
-                                                ])),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: Adapt.pt(20),
-                                        ),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                "$inside",
-                                                style: TextStyle(
-                                                  fontSize: Adapt.pt(15),
-                                                  color: Colors.black,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
-                                              Text(
-                                                "$creattime" + ":" + "$creattime2",
-                                                style: TextStyle(
-                                                    fontSize: Adapt.pt(8),
-                                                    color: Color(0xff6b6b6b)),
-                                              ),
+                                Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                            gaipage(token: token,inside: _get.data!.records[index].journalText,id: _get.data!.records[index].journalId,
+                                            ))).then((value) {
+                                  setState(() {
 
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(width: Adapt.pt(40),)
-                                      ],
+                                  });
+
+                                });
+
+                              },
+                              child: Slidable(
+                                actionPane: SlidableDrawerActionPane(),
+                                secondaryActions: [
+                                  IconSlideAction(
+                                    caption:
+                                    "删除",
+                                    iconWidget: IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: ()async{
+                                        await delete(token, _get.data!.records[index].journalId.toString());
+                                        setState(() {
+
+                                        });
+                                      },
                                     ),
+                                    color: Colors.red,
+
+
                                   ),
-                                  Divider(
-                                    height: Adapt.pt(1),
-                                    color: Color(0xFFE3E3E3),
+                                  IconSlideAction(
+                                    iconWidget: IconButton(
+                                        onPressed: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return Container(
+                                                height: Adapt.hpt(200),
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                  BorderRadius.only(
+                                                    topLeft:
+                                                    const Radius.circular(
+                                                        20.0),
+                                                    topRight:
+                                                    const Radius.circular(
+                                                        20.0),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  children: [
+                                                    GestureDetector(
+                                                      behavior: HitTestBehavior.translucent,
+                                                      onTap: () async {
+                                                        await getDiaryofDiarys
+                                                            .getofDiarys(
+                                                            token,
+                                                            _get
+                                                                .data!
+                                                                .records[
+                                                            index]
+                                                                .journalGroupIdAt);
+                                                        if (getDiaryofDiarys
+                                                            .diarys
+                                                            .code ==
+                                                            200) {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                      Diarychuan2(
+                                                                        diaryListId: _get.data!.records[index].journalGroupIdAt,
+                                                                      )));
+                                                        } else {
+                                                          showMessage(
+                                                              context,
+                                                              getDiaryofDiarys
+                                                                  .diarys
+                                                                  .message!);
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width: Adapt.pt(
+                                                                  20),
+                                                            ),
+                                                            Icon(
+                                                              Icons
+                                                                  .format_list_bulleted,
+                                                              size: Adapt.pt(
+                                                                  30),
+                                                              color: Color(
+                                                                  0xffffaeae),
+                                                            ),
+                                                            SizedBox(
+                                                              width: Adapt.pt(
+                                                                  20),
+                                                            ),
+                                                            Text(
+                                                              "展示当前日记串",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                  Adapt.pt(
+                                                                      18)),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        margin:
+                                                        EdgeInsets.all(
+                                                            Adapt.hpt(15)),
+                                                      ),
+                                                    ),
+                                                    Divider(
+                                                      color: Colors.grey,
+                                                    ),
+                                                    GestureDetector(
+                                                      behavior: HitTestBehavior.translucent,
+                                                      onTap: () async {
+                                                        await getDiaryofDiarys
+                                                            .getofDiarys(
+                                                            token,
+                                                            _get
+                                                                .data!
+                                                                .records[
+                                                            index]
+                                                                .journalGroupIdAt);
+                                                        if (getDiaryofDiarys
+                                                            .diarys
+                                                            .code ==
+                                                            200) {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                      Ofeditorpage(
+
+                                                                        token: token, diaryid: _get.data!.records[index].journalGroupIdAt.toString(),
+                                                                      )));
+                                                        } else {
+                                                          showMessage(
+                                                              context,
+                                                              getDiaryofDiarys
+                                                                  .diarys
+                                                                  .message!);
+                                                        }
+                                                      },
+
+                                                      child: Container(
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width: Adapt.pt(
+                                                                  20),
+                                                            ),
+                                                            Icon(
+                                                              Icons.add,
+                                                              size: Adapt.pt(
+                                                                  35),
+                                                              color: Color(
+                                                                  0xffc3f4ff),
+                                                            ),
+                                                            SizedBox(
+                                                              width: Adapt.pt(
+                                                                  20),
+                                                            ),
+                                                            Text(
+                                                              "新建日记到当前日记串",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                  Adapt.pt(
+                                                                      18)),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        margin:
+                                                        EdgeInsets.all(
+                                                            Adapt.hpt(8)),
+                                                      ),
+                                                    ),
+                                                    Divider(
+                                                      color: Colors.grey,
+                                                    ),
+                                                    GestureDetector(
+                                                      behavior: HitTestBehavior.translucent,
+                                                      onTap: () async {
+                                                        await getDiaryofDiarys
+                                                            .getofDiarys(
+                                                            token,
+                                                            _get
+                                                                .data!
+                                                                .records[
+                                                            index]
+                                                                .journalGroupIdAt);
+                                                        if (getDiaryofDiarys
+                                                            .diarys
+                                                            .code ==
+                                                            200) {
+                                                          deleteDiary(_get
+                                                              .data!
+                                                              .records[
+                                                          index]
+                                                              .journalId.toString(), _get
+                                                              .data!
+                                                              .records[
+                                                          index]
+                                                              .journalGroupIdAt.toString());
+                                                          showTureMessage(context);
+                                                        } else {
+                                                          showMessage(
+                                                              context,
+                                                              getDiaryofDiarys
+                                                                  .diarys
+                                                                  .message!);
+                                                        }
+                                                      },
+                                                      child: Container(
+                                                        child: Row(
+                                                          children: [
+                                                            SizedBox(
+                                                              width: Adapt.pt(
+                                                                  20),
+                                                            ),
+                                                            Icon(
+                                                              Icons
+                                                                  .exit_to_app,
+                                                              size: Adapt.pt(
+                                                                  30),
+                                                              color: Color(
+                                                                  0xffffe4a8),
+                                                            ),
+                                                            SizedBox(
+                                                              width: Adapt.pt(
+                                                                  20),
+                                                            ),
+                                                            Text(
+                                                              "从日记串移出",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                  Adapt.pt(
+                                                                      18)),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        margin:
+                                                        EdgeInsets.all(
+                                                            Adapt.hpt(10)),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        icon: Icon(
+                                          MyFlutterApp.circle,
+                                          color: Colors.white,
+                                          size: Adapt.pt(20),
+                                        )),
+                                    color: Colors.green,
                                   )
                                 ],
+                                controller: _slidableController,
+                                key: UniqueKey(),
+                                actionExtentRatio: 0.15,
+                                dismissal:SlidableDismissal(child: SlidableDrawerDismissal(),
+                                  dismissThresholds: <SlideActionType, double>{
+                                    SlideActionType.primary: 1.0,
+                                    SlideActionType.secondary: 1.0,
+                                  },
+                                  onDismissed:(actionType){
+                                    print("66666");
+                                  },
+                                ),
+
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: Adapt.pt(79),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(
+                                            width: Adapt.pt(20),
+                                          ),
+                                          Column(
+                                            children: [
+                                              SizedBox(
+                                                height: Adapt.pt(15),
+                                              ),
+                                              RichText(
+                                                text: TextSpan(children: [
+                                                  TextSpan(
+                                                      text: "$creattimeday",
+                                                      style: TextStyle(
+                                                          fontSize: Adapt.pt(25),
+                                                          color: Colors.black)),
+                                                  TextSpan(
+                                                      text: "$creattimemonth",
+                                                      style: TextStyle(
+                                                          fontSize: Adapt.pt(15),
+                                                          color: Colors.black)),
+                                                  TextSpan(
+                                                      text: "月",
+                                                      style: TextStyle(
+                                                          fontSize: Adapt.pt(13),
+                                                          color: Colors.black)),
+                                                ]),
+                                              ),
+                                              RichText(
+                                                  text: TextSpan(children: [
+                                                    TextSpan(
+                                                        text: "星期",
+                                                        style: TextStyle(
+                                                            fontSize: Adapt.pt(12),
+                                                            color: Colors.black)),
+                                                    TextSpan(
+                                                      text: a[
+                                                      DateTime(int.parse(creattimeyear), int.parse(creattimemonth), int.parse(creattimeday))
+                                                          .weekday -
+                                                          1],
+                                                      style: TextStyle(
+                                                          fontSize: Adapt.pt(12),
+                                                          color: Colors.black),
+                                                    ),
+                                                  ])),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            width: Adapt.pt(20),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  "$inside",
+                                                  style: TextStyle(
+                                                    fontSize: Adapt.pt(15),
+                                                    color: Colors.black,
+                                                  ),
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  softWrap: false,
+                                                ),
+                                                Text(
+                                                  "$creattime" + ":" + "$creattime2",
+                                                  style: TextStyle(
+                                                      fontSize: Adapt.pt(8),
+                                                      color: Color(0xff6b6b6b)),
+                                                ),
+
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(width: Adapt.pt(40),)
+                                        ],
+                                      ),
+                                    ),
+                                    Divider(
+                                      height: Adapt.pt(1),
+                                      color: Color(0xFFE3E3E3),
+                                    )
+                                  ],
+                                ),
                               ),
                             );
                           }

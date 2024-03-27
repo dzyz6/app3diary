@@ -38,6 +38,14 @@ dependencies:
   flutter_slidable: ^0.6.0
   async: ^2.3.0
   easy_refresh: ^3.3.4
+  image_gallery_saver: ^1.7.1
+  permission_handler: ^8.1.6
+  share_plus: ^3.0.1
+  fluwx_no_pay: ^3.8.1
+  fluttertoast: ^8.2.4
+  path_provider: ^2.1.2
+  screenshot_callback: ^3.0.1
+  screenshot: ^2.3.0
 
 
   # The following adds the Cupertino Icons font to your application.
