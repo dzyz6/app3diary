@@ -39,8 +39,7 @@ class _DiarychuanState extends State<Diarychuan> {
   @override
   var page = 1;
   void futureini() async {
-    await getDiaryList.getofDiarys(widget.token, page).then((value) 
-    {
+    await getDiaryList.getofDiarys(widget.token, page).then((value) {
       setState(() {
         imageCardCreate(getDiaryList);
       });
@@ -158,7 +157,7 @@ class DiaryList extends StatefulWidget {
 class _DiaryListState extends State<DiaryList> {
   @override
   Widget build(BuildContext context) {
-    return new ListView.builder(
+    return ListView.builder(
         itemCount: litems.length,
         itemBuilder: (BuildContext ctxt, int index) {
           return litems[index];
@@ -180,11 +179,11 @@ class ImageListCard extends StatefulWidget {
 class _ImageListCardState extends State<ImageListCard> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: Row(
+    return 
+        Row(
       children: widget.imageCardList,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    ));
+    );
   }
 }
 
@@ -291,60 +290,64 @@ class _ImageBoxState extends State<ImageBox> {
         child: Container(
           height: Adapt.pt(200),
           width: Adapt.pt(200),
-          child: Stack(
-              alignment: Alignment.topRight,
-              fit: StackFit.loose,
-              children: [
-                Align(
-                  alignment: Alignment(0, 0),
-                  child: Container(
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromARGB(255, 139, 139, 139)
-                            .withOpacity(0.5), // 阴影的颜色
-                        offset: Offset(-7, 7),
-                        blurRadius: 3,
-                        spreadRadius: 0.0,
-                      ),
-                    ], borderRadius: BorderRadius.circular((30.0))),
-                    height: Adapt.pt(160),
-                    width: Adapt.pt(160),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        image2,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment(0.3, -0.3),
-                  child: Container(
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                        color: const Color.fromARGB(255, 139, 139, 139)
-                            .withOpacity(0.5), // 阴影的颜色
-                        offset: Offset(
-                          Adapt.pt(5),
-                          Adapt.pt(5),
+          child: Column(
+            children: [
+              Stack(
+                  alignment: Alignment.topRight,
+                  fit: StackFit.loose,
+                  children: [
+                    Align(
+                      alignment: Alignment(0, 0),
+                      child: Container(
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(255, 139, 139, 139)
+                                .withOpacity(0.5), // 阴影的颜色
+                            offset: Offset(-7, 7),
+                            blurRadius: 3,
+                            spreadRadius: 0.0,
+                          ),
+                        ], borderRadius: BorderRadius.circular((30.0))),
+                        height: Adapt.pt(160),
+                        width: Adapt.pt(160),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            image2,
+                            fit: BoxFit.fill,
+                          ),
                         ),
-                        blurRadius: 3,
-                        spreadRadius: 0.0,
-                      ),
-                    ], borderRadius: BorderRadius.circular((20.0))),
-                    height: Adapt.pt(160),
-                    width: Adapt.pt(160),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        images[widget.id! % 7],
-                        fit: BoxFit.fill,
                       ),
                     ),
-                  ),
-                ),
-              ]),
+                    Align(
+                      alignment: Alignment(0.3, -0.3),
+                      child: Container(
+                        decoration: BoxDecoration(boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(255, 139, 139, 139)
+                                .withOpacity(0.5), // 阴影的颜色
+                            offset: Offset(
+                              Adapt.pt(5),
+                              Adapt.pt(5),
+                            ),
+                            blurRadius: 3,
+                            spreadRadius: 0.0,
+                          ),
+                        ], borderRadius: BorderRadius.circular((20.0))),
+                        height: Adapt.pt(160),
+                        width: Adapt.pt(160),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            images[widget.id! % 7],
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ]),
+            ],
+          ),
         ));
   }
 }
@@ -358,7 +361,7 @@ class DiaryLine extends StatefulWidget {
   DiaryLine(
       {super.key,
       required this.index /*required this.diaryID,required this.text*/});
-  
+
   @override
   State<DiaryLine> createState() => _DiaryLineState();
 }
@@ -374,20 +377,25 @@ class _DiaryLineState extends State<DiaryLine> {
     Map<String, dynamic> map = Map();
     map['journalId'] = a;
     Response response = await dio.get(url, queryParameters: map);
-    imagelist = ImagesofDIary.fromJson(response.data);   
-    print(response.data); 
+    imagelist = ImagesofDIary.fromJson(response.data);
+    print(response.data);
+    if (!mounted) {
+  return;
+}
     setState(() {
-    if (imagelist.data?.length == 0) {
+      if (imagelist.data?.length == 0) {
         _diarys.removeAt(0);
       } else {
         _diarys.removeAt(0);
         for (var i = 0; i < imagelist.data!.length; i++) {
-          _diarys.add(Container(
-      margin: EdgeInsets.only(top: 5),
-      child: Image.network(imagelist.data![i].pictureUrl!),
-      width: 200,
-      height: 200,
-    ),);
+          _diarys.add(
+            Container(
+              margin: EdgeInsets.only(top: 5),
+              child: Image.network(imagelist.data![i].pictureUrl!),
+              width: 200,
+              height: 200,
+            ),
+          );
         }
       }
     });
@@ -413,14 +421,11 @@ class _DiaryLineState extends State<DiaryLine> {
 
     getImage();
 
-
     super.initState();
   }
 
   Widget build(BuildContext context) {
-    setState(() {
-      
-    });
+    setState(() {});
     return Container(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,9 +445,7 @@ class _DiaryLineState extends State<DiaryLine> {
                       getDiaryofDiarys.diarys.data![widget.index].journalText!,
                       style: TextStyle(fontSize: 17),
                     ),
-                    Column(
-                      children: _diarys
-                    ),
+                    Column(children: _diarys),
                   ]),
             ),
           ),
@@ -561,7 +564,6 @@ class TimeData extends StatelessWidget {
   var day;
   var weekday;
   @override
-
   Widget build(BuildContext context) {
     this.moon = time.month.toString() + '月';
     this.day = time.day.toString();
@@ -664,65 +666,47 @@ class _Diarychuan2State extends State<Diarychuan2> {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class ImagesofDIary {
-    int? code;
-    String? message;
-    List<Data>? data;
+  int? code;
+  String? message;
+  List<Data>? data;
 
-    ImagesofDIary({this.code, this.message, this.data});
+  ImagesofDIary({this.code, this.message, this.data});
 
-    ImagesofDIary.fromJson(Map<String, dynamic> json) {
-        code = json["code"];
-        message = json["message"];
-        data = json["data"] == null ? null : (json["data"] as List).map((e) => Data.fromJson(e)).toList();
+  ImagesofDIary.fromJson(Map<String, dynamic> json) {
+    code = json["code"];
+    message = json["message"];
+    data = json["data"] == null
+        ? null
+        : (json["data"] as List).map((e) => Data.fromJson(e)).toList();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> _data = <String, dynamic>{};
+    _data["code"] = code;
+    _data["message"] = message;
+    if (data != null) {
+      _data["data"] = data?.map((e) => e.toJson()).toList();
     }
-
-    Map<String, dynamic> toJson() {
-        final Map<String, dynamic> _data = <String, dynamic>{};
-        _data["code"] = code;
-        _data["message"] = message;
-        if(data != null) {
-            _data["data"] = data?.map((e) => e.toJson()).toList();
-        }
-        return _data;
-    }
+    return _data;
+  }
 }
 
 class Data {
-    String? pictureId;
-    String? pictureUrl;
+  String? pictureId;
+  String? pictureUrl;
 
-    Data({this.pictureId, this.pictureUrl});
+  Data({this.pictureId, this.pictureUrl});
 
-    Data.fromJson(Map<String, dynamic> json) {
-        pictureId = json["pictureId"];
-        pictureUrl = json["pictureUrl"];
-    }
+  Data.fromJson(Map<String, dynamic> json) {
+    pictureId = json["pictureId"];
+    pictureUrl = json["pictureUrl"];
+  }
 
-    Map<String, dynamic> toJson() {
-        final Map<String, dynamic> _data = <String, dynamic>{};
-        _data["pictureId"] = pictureId;
-        _data["pictureUrl"] = pictureUrl;
-        return _data;
-    }
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> _data = <String, dynamic>{};
+    _data["pictureId"] = pictureId;
+    _data["pictureUrl"] = pictureUrl;
+    return _data;
+  }
 }
