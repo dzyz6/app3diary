@@ -1,15 +1,19 @@
 import 'package:async/async.dart';
 import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/changepage.dart';
+import 'package:diary/diarychuan.dart';
+import 'package:diary/ofeditorpage.dart';
+import 'package:diary/pageanimate.dart';
+import 'package:diary/register.dart/interface.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dioclass.dart';
-import 'gaipage.dart';
 import 'sizecontrol.dart';
 import 'package:diary/searchpage.dart';
 import 'getpicturedio.dart';
 import 'persondio.dart';
+import 'gaipage.dart';
 
 var usermessage = UserMessage();
 
@@ -406,6 +410,35 @@ class _diarypageState extends State<diarypage> {
                                                     children: [
                                                       GestureDetector(
                                                         behavior: HitTestBehavior.translucent,
+                                                        onTap: () async {
+                                                          await getDiaryofDiarys
+                                                              .getofDiarys(
+                                                                  token,
+                                                                  _get
+                                                                      .data!
+                                                                      .records[
+                                                                          index]
+                                                                      .journalGroupIdAt);
+                                                          if (getDiaryofDiarys
+                                                                  .diarys
+                                                                  .code ==
+                                                              200) {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            Diarychuan2(
+                                                                              diaryListId: _get.data!.records[index].journalGroupIdAt,
+                                                                            )));
+                                                          } else {
+                                                            showMessage(
+                                                                context,
+                                                                getDiaryofDiarys
+                                                                    .diarys
+                                                                    .message!);
+                                                          }
+                                                        },
                                                         child: Container(
                                                           child: Row(
                                                             children: [
@@ -444,6 +477,37 @@ class _diarypageState extends State<diarypage> {
                                                       ),
                                                       GestureDetector(
                                                         behavior: HitTestBehavior.translucent,
+                                                         onTap: () async {
+                                                          await getDiaryofDiarys
+                                                              .getofDiarys(
+                                                                  token,
+                                                                  _get
+                                                                      .data!
+                                                                      .records[
+                                                                          index]
+                                                                      .journalGroupIdAt);
+                                                          if (getDiaryofDiarys
+                                                                  .diarys
+                                                                  .code ==
+                                                              200) {
+                                                            Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                    builder:
+                                                                        (context) =>
+                                                                            Ofeditorpage(
+
+                                                                              token: token, diaryid: _get.data!.records[index].journalGroupIdAt.toString(),
+                                                                            )));
+                                                          } else {
+                                                            showMessage(
+                                                                context,
+                                                                getDiaryofDiarys
+                                                                    .diarys
+                                                                    .message!);
+                                                          }
+                                                        },
+
                                                         child: Container(
                                                           child: Row(
                                                             children: [
@@ -481,6 +545,37 @@ class _diarypageState extends State<diarypage> {
                                                       ),
                                                       GestureDetector(
                                                         behavior: HitTestBehavior.translucent,
+                                                                                                                onTap: () async {
+                                                          await getDiaryofDiarys
+                                                              .getofDiarys(
+                                                                  token,
+                                                                  _get
+                                                                      .data!
+                                                                      .records[
+                                                                          index]
+                                                                      .journalGroupIdAt);
+                                                          if (getDiaryofDiarys
+                                                                  .diarys
+                                                                  .code ==
+                                                              200) {
+                                                           deleteDiary(_get
+                                                                      .data!
+                                                                      .records[
+                                                                          index]
+                                                                      .journalId.toString(), _get
+                                                                      .data!
+                                                                      .records[
+                                                                          index]
+                                                                      .journalGroupIdAt.toString());
+                                                          showTureMessage(context);
+                                                          } else {
+                                                            showMessage(
+                                                                context,
+                                                                getDiaryofDiarys
+                                                                    .diarys
+                                                                    .message!);
+                                                          }
+                                                        },
                                                         child: Container(
                                                           child: Row(
                                                             children: [
@@ -601,10 +696,17 @@ class _diarypageState extends State<diarypage> {
                                                               EdgeInsets.all(
                                                                   Adapt.hpt(10)),
                                                         ),
-                                                        onTap: ()async{
-                                                          await delete(token, _get.data!.records[index].journalId.toString());
-                                                          Navigator.of(context).pop();
-
+                                                        onTap: () async {
+                                                          await delete(
+                                                              token,
+                                                              _get
+                                                                  .data!
+                                                                  .records[
+                                                                      index]
+                                                                  .journalId
+                                                                  .toString());
+                                                          Navigator.of(context)
+                                                              .pop();
                                                         },
                                                         behavior: HitTestBehavior.translucent,
                                                       ),
@@ -614,9 +716,7 @@ class _diarypageState extends State<diarypage> {
                                                 );
                                               },
                                             ).then((value) {
-                                              setState(() {
-
-                                              });
+                                              setState(() {});
                                             });
                                           },
                                           icon: Icon(
@@ -651,4 +751,51 @@ class _diarypageState extends State<diarypage> {
       ),
     );
   }
+}
+
+void showMessage(BuildContext context, String text) {
+  showCupertinoDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("操作失败"),
+        content: Text(text),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("确定")),
+        ],
+      );
+    },
+  );
+}
+void showTureMessage(BuildContext context) {
+  showCupertinoDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text("操作成功"),
+        content: Text('成功移除日记'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("确定")),
+        ],
+      );
+    },
+  );
+}
+Future<void> deleteDiary(String diaryid,String diarylistid) async {
+  Dio dio = Dio();
+  String url = "http://mambaout.xyz/deleteJournalFromJournalGroup";
+  dio.options.baseUrl = url;
+  dio.options.headers['token'] = token;
+   Map<String,dynamic> map = Map();
+    map['journalId']=diaryid;
+    map['journalGroupId']=diarylistid;
+  Response response = await dio.put(url,data: map);
 }
