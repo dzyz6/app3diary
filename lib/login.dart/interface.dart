@@ -58,25 +58,29 @@ class _InterfaceTextState extends State<InterfaceText> {
             Container(
               margin: EdgeInsets.only(top: Adapt.hpt(10)),
               alignment: Alignment.center,
-              child: Expanded(
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.all(Adapt.pt(5)),
-                  margin: EdgeInsets.only(left: 10),
-                  decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      border: Border.all(
-                          color: Color.fromARGB(255, 248, 248, 248),
-                          width: 0.5),
-                      borderRadius: BorderRadius.circular((30.0))),
-                  child: TextField(
-                      controller: _controllerId,
-                      decoration: InputDecoration(
-                          hintText: "请输入3-8个数字、字母或汉字",
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: Adapt.pt(7), horizontal: Adapt.pt(20)),
-                          border: InputBorder.none)),
-                ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.all(Adapt.pt(5)),
+                      margin: EdgeInsets.only(left: 10),
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          border: Border.all(
+                              color: Color.fromARGB(255, 248, 248, 248),
+                              width: 0.5),
+                          borderRadius: BorderRadius.circular((30.0))),
+                      child: TextField(
+                          controller: _controllerId,
+                          decoration: InputDecoration(
+                              hintText: "请输入3-8个数字、字母或汉字",
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: Adapt.pt(7), horizontal: Adapt.pt(20)),
+                              border: InputBorder.none)),
+                    ),
+                  ),
+                ],
               ),
               height: Adapt.pt(48),
               width: Adapt.pt(295),
@@ -95,25 +99,29 @@ class _InterfaceTextState extends State<InterfaceText> {
             Container(
               margin: EdgeInsets.only(top: Adapt.hpt(10)),
               alignment: Alignment.center,
-              child: Expanded(
-                child: Container(
-                  alignment: Alignment.centerRight,
-                  padding: EdgeInsets.all(Adapt.pt(5)),
-                  margin: EdgeInsets.only(left: 10),
-                  decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      border: Border.all(
-                          color: Color.fromARGB(255, 248, 248, 248),
-                          width: 0.5),
-                      borderRadius: BorderRadius.circular((30.0))),
-                  child: TextField(
-                      controller: _controllerS,
-                      decoration: InputDecoration(
-                          hintText: "请输入密码",
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: Adapt.pt(7), horizontal: Adapt.pt(20)),
-                          border: InputBorder.none)),
-                ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Container(
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.all(Adapt.pt(5)),
+                      margin: EdgeInsets.only(left: 10),
+                      decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          border: Border.all(
+                              color: Color.fromARGB(255, 248, 248, 248),
+                              width: 0.5),
+                          borderRadius: BorderRadius.circular((30.0))),
+                      child: TextField(
+                          controller: _controllerS,
+                          decoration: InputDecoration(
+                              hintText: "请输入密码",
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: Adapt.pt(7), horizontal: Adapt.pt(20)),
+                              border: InputBorder.none)),
+                    ),
+                  ),
+                ],
               ),
               height: Adapt.pt(48),
               width: Adapt.pt(295),

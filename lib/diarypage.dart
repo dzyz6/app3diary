@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dioclass.dart';
+import 'gaipage.dart';
 import 'sizecontrol.dart';
 import 'package:diary/searchpage.dart';
 import 'getpicturedio.dart';
@@ -404,6 +405,7 @@ class _diarypageState extends State<diarypage> {
                                                   child: Column(
                                                     children: [
                                                       GestureDetector(
+                                                        behavior: HitTestBehavior.translucent,
                                                         child: Container(
                                                           child: Row(
                                                             children: [
@@ -441,6 +443,7 @@ class _diarypageState extends State<diarypage> {
                                                         color: Colors.grey,
                                                       ),
                                                       GestureDetector(
+                                                        behavior: HitTestBehavior.translucent,
                                                         child: Container(
                                                           child: Row(
                                                             children: [
@@ -477,6 +480,7 @@ class _diarypageState extends State<diarypage> {
                                                         color: Colors.grey,
                                                       ),
                                                       GestureDetector(
+                                                        behavior: HitTestBehavior.translucent,
                                                         child: Container(
                                                           child: Row(
                                                             children: [
@@ -553,6 +557,7 @@ class _diarypageState extends State<diarypage> {
                                                   child: Column(
                                                     children: [
                                                       GestureDetector(
+                                                        behavior: HitTestBehavior.translucent,
                                                         child: Container(
                                                           child: Text(
                                                             "编辑日记",
@@ -565,6 +570,19 @@ class _diarypageState extends State<diarypage> {
                                                               EdgeInsets.all(
                                                                   Adapt.hpt(15)),
                                                         ),
+                                                        onTap: (){
+                                                          Navigator.push(
+                                                              context,
+                                                              CupertinoPageRoute(
+                                                                  builder: (context) =>
+                                                                      gaipage(token: token,inside: _get.data!.records[index].journalText,id: _get.data!.records[index].journalId,
+                                                                      ))).then((value) {
+                                                            setState(() {
+
+                                                            });
+
+                                                          });
+                                                        },
                                                       ),
                                                       Divider(
                                                         color: Colors.grey,
@@ -588,6 +606,7 @@ class _diarypageState extends State<diarypage> {
                                                           Navigator.of(context).pop();
 
                                                         },
+                                                        behavior: HitTestBehavior.translucent,
                                                       ),
 
                                                     ],

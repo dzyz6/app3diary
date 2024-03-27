@@ -180,11 +180,15 @@ class ImageListCard extends StatefulWidget {
 class _ImageListCardState extends State<ImageListCard> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: Row(
-      children: widget.imageCardList,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    ));
+    return Column(
+      children: [
+        Expanded(
+            child: Row(
+          children: widget.imageCardList,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        )),
+      ],
+    );
   }
 }
 

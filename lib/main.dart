@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     const appTitle = 'Form Styling Demo';
     return MaterialApp(
-      title: appTitle,
+      title: "回响树洞",
       home: Scaffold(
         body: Interface(),
       ),
