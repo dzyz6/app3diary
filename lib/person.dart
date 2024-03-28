@@ -1,5 +1,6 @@
 import 'package:diary/diarychuan.dart';
 import 'package:diary/login.dart/interface.dart';
+import 'package:diary/main.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import './persondio.dart';
@@ -600,8 +601,9 @@ _UserBreakDialog(BuildContext context,String token) async {
                   ),
                   onPressed: () async {
                     if(await logout(token)){
- Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Interface()));                    }
+RestartWidget.restartApp(context);
+
+                  }
            },
                 ),
                 Spacer(),

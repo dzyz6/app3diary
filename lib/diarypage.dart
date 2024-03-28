@@ -17,8 +17,34 @@ import 'gaipage.dart';
 
 var usermessage = UserMessage();
 
+ImageProvider profile() {
+  if (usermessage.data?.backgroundImage == null) {
+    return AssetImage("lib/assets/images/rabbit1.jpg");
+  } else {
+    return NetworkImage(usermessage.data!.backgroundImage ?? "");
+  }
+}
 
+class ProfilePhoto extends StatefulWidget {
+  const ProfilePhoto({super.key});
 
+  @override
+  State<ProfilePhoto> createState() => _ProfilePhotoState();
+}
+
+class _ProfilePhotoState extends State<ProfilePhoto> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: profile(),
+        fit: BoxFit.cover,
+      )),
+      height: Adapt.hpt(260),
+    );
+  }
+}
 
 class diarypage extends StatefulWidget {
   const diarypage({Key? key, required this.token}) : super(key: key);
@@ -63,6 +89,8 @@ class _diarypageState extends State<diarypage> {
     map['date'] = null;
     Response response = await dio.get(url, queryParameters: map);
     _get = Get.fromJson(response.data);
+
+
   }
 
 
@@ -107,6 +135,7 @@ class _diarypageState extends State<diarypage> {
     Response response = await dio.get(url, data: token);
     usermessage = await UserMessage.fromJson(response.data);
     print(response);
+  }
 
   }
 
@@ -124,9 +153,6 @@ class _diarypageState extends State<diarypage> {
     });;
     getUserMessage(token);
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -234,6 +260,7 @@ class _diarypageState extends State<diarypage> {
           SliverList(
               delegate:
                   SliverChildBuilderDelegate((BuildContext context, int index) {
+            total = _get.data!.total;
             return FutureBuilder(
                 future: createlist(token),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
