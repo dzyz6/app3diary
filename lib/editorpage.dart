@@ -340,7 +340,6 @@ class _editorpageState extends State<editorpage> {
                       textcontroller.text.toString() != "") {
                     FocusScope.of(context).unfocus();
                     await editor.tokenTest(token,imagePaths);
-
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       Navigator.pop(context);
                     });

@@ -13,6 +13,7 @@ import 'sizecontrol.dart';
 import 'package:diary/searchpage.dart';
 import 'getpicturedio.dart';
 import 'persondio.dart';
+import 'gaipage.dart';
 
 var usermessage = UserMessage();
 
@@ -69,7 +70,7 @@ class _diarypageState extends State<diarypage> {
   AsyncMemoizer _memoizer = AsyncMemoizer();
   final AsyncMemoizer _memoizer1 = AsyncMemoizer();
 
-  Future<Get> createlist(String token) async {
+  Future<void> createlist(String token) async {
     String url = "https://mambaout.xyz/getJournalsByUid";
     dio.options.baseUrl = url;
     dio.options.headers['token'] = token;
@@ -80,17 +81,10 @@ class _diarypageState extends State<diarypage> {
     map['date'] = null;
     Response response = await dio.get(url, queryParameters: map);
     _get = Get.fromJson(response.data);
-    setState(() {
-      total = _get.data!.total;
-    });
-    return Get.fromJson(response.data);
+
+
   }
 
-  Future _createlist() {
-    return this._memoizer.runOnce(() async {
-      return await createlist(token);
-    });
-  }
 
   var _get2 = Getpicture();
 
@@ -111,13 +105,13 @@ class _diarypageState extends State<diarypage> {
     _get2 = Getpicture.fromJson(response.data);
   }
 
-  Future<void> delete(String token, String id) async {
+  Future<void> delete(String token,String id) async {
     String url = "https://mambaout.xyz/modifyJournal";
 
     dio.options.headers['token'] = token;
     Map<String, dynamic> map = Map();
     map['journalId'] = id;
-    map['isDeleted'] = '1';
+    map['isDeleted']='1';
 
     Response response = await dio.put(url, data: map);
     print(response);
@@ -130,19 +124,22 @@ class _diarypageState extends State<diarypage> {
     dio.options.headers['token'] = token;
     Response response = await dio.get(url, data: token);
     usermessage = await UserMessage.fromJson(response.data);
+    print(response);
   }
 
-  _getusermessage() {
-    return this._memoizer1.runOnce(() => getUserMessage(token));
-  }
 
-  var _futureget;
+  
 
   @override
   void initState() {
     super.initState();
-    _futureget = _createlist();
-    _getusermessage();
+    createlist(token).then((value) {
+      setState(() {
+        total = _get.data!.total;
+      });
+    });
+
+    getUserMessage(token);
   }
 
   @override
@@ -207,7 +204,7 @@ class _diarypageState extends State<diarypage> {
                                         token: token,
                                       ))).then((value) {
                             setState(() {
-                              _getusermessage();
+                              getUserMessage(token);
                             });
                           });
                           ;
@@ -245,20 +242,28 @@ class _diarypageState extends State<diarypage> {
                   SliverChildBuilderDelegate((BuildContext context, int index) {
             total = _get.data!.total;
             return FutureBuilder(
-                future: _futureget,
+                future: createlist(token),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Container();
                   } else {
-                    inside = _get.data!.records[index].journalText;
-                    var time = _get.data!.records[index].createdAt;
-                    var creattime = time.substring(12, 14);
-                    var creattime2 = time.substring(15, 17);
-                    var creattimeday = time.substring(8, 10);
-                    var creattimemonth = time.substring(6, 7);
-                    var creattimeyear = time.substring(0, 4);
-                    getpicture(
-                        token, _get.data!.records[index].journalId.toString());
+
+                    if(total<=0){
+                      return Container();
+                    }
+                    else{
+                      var time="1111111111111111111111111111111111111111";
+                      if(_get.data!.records.length>0){
+                        inside = _get.data!.records[index].journalText;
+                        time= _get.data!.records[index].createdAt;
+                        getpicture(
+                            token, _get.data!.records[index].journalId.toString());
+                      }
+                      var creattime = time.substring(12, 14);
+                      var creattime2 = time.substring(15, 17);
+                      var creattimeday = time.substring(8, 10);
+                      var creattimemonth = time.substring(6, 7);
+                      var creattimeyear = time.substring(0, 4);
 
                     return Column(
                       children: [
@@ -505,224 +510,252 @@ class _diarypageState extends State<diarypage> {
                                                           }
                                                         },
 
-                                                        child: Container(
-                                                          child: Row(
-                                                            children: [
-                                                              SizedBox(
-                                                                width: Adapt.pt(
-                                                                    20),
-                                                              ),
-                                                              Icon(
-                                                                Icons.add,
-                                                                size: Adapt.pt(
-                                                                    35),
-                                                                color: Color(
-                                                                    0xffc3f4ff),
-                                                              ),
-                                                              SizedBox(
-                                                                width: Adapt.pt(
-                                                                    20),
-                                                              ),
-                                                              Text(
-                                                                "新建日记到当前日记串",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        Adapt.pt(
-                                                                            18)),
-                                                              ),
-                                                            ],
+                                                          child: Container(
+                                                            child: Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Icon(
+                                                                  Icons.add,
+                                                                  size: Adapt.pt(
+                                                                      35),
+                                                                  color: Color(
+                                                                      0xffc3f4ff),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Text(
+                                                                  "新建日记到当前日记串",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                      Adapt.pt(
+                                                                          18)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            margin:
+                                                            EdgeInsets.all(
+                                                                Adapt.hpt(8)),
                                                           ),
-                                                          margin:
-                                                              EdgeInsets.all(
-                                                                  Adapt.pt(8)),
                                                         ),
-                                                      ),
-                                                      Divider(
-                                                        color: Colors.grey,
-                                                      ),
-                                                      GestureDetector(
-                                                                                                                onTap: () async {
-                                                          await getDiaryofDiarys
-                                                              .getofDiarys(
-                                                                  token,
-                                                                  _get
-                                                                      .data!
-                                                                      .records[
-                                                                          index]
-                                                                      .journalGroupIdAt);
-                                                          if (getDiaryofDiarys
-                                                                  .diarys
-                                                                  .code ==
-                                                              200) {
-                                                           deleteDiary(_get
-                                                                      .data!
-                                                                      .records[
-                                                                          index]
-                                                                      .journalId.toString(), _get
-                                                                      .data!
-                                                                      .records[
-                                                                          index]
-                                                                      .journalGroupIdAt.toString());
-                                                          showTureMessage(context);
-                                                          } else {
-                                                            showMessage(
-                                                                context,
-                                                                getDiaryofDiarys
-                                                                    .diarys
-                                                                    .message!);
-                                                          }
-                                                        },
-                                                        child: Container(
-                                                          child: Row(
-                                                            children: [
-                                                              SizedBox(
-                                                                width: Adapt.pt(
-                                                                    20),
-                                                              ),
-                                                              Icon(
-                                                                Icons
-                                                                    .exit_to_app,
-                                                                size: Adapt.pt(
-                                                                    30),
-                                                                color: Color(
-                                                                    0xffffe4a8),
-                                                              ),
-                                                              SizedBox(
-                                                                width: Adapt.pt(
-                                                                    20),
-                                                              ),
-                                                              Text(
-                                                                "从日记串移出",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        Adapt.pt(
-                                                                            18)),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          margin:
-                                                              EdgeInsets.all(
-                                                                  Adapt.pt(10)),
+                                                        Divider(
+                                                          color: Colors.grey,
                                                         ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                          icon: Icon(
-                                            MyFlutterApp.circle,
-                                            size: Adapt.pt(18),
-                                            color: Color(0xFF7B9F4D),
-                                          ),
-                                        ),
-                                        height: Adapt.hpt(25),
-                                        width: Adapt.pt(25),
-                                      ),
-                                      SizedBox(
-                                        width: Adapt.pt(10),
-                                      ),
-                                      SizedBox(
-                                        child: IconButton(
-                                          padding: new EdgeInsets.all(0.0),
-                                          onPressed: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return Container(
-                                                  height: Adapt.hpt(130),
-                                                  width: double.infinity,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      topLeft:
-                                                          const Radius.circular(
-                                                              20.0),
-                                                      topRight:
-                                                          const Radius.circular(
-                                                              20.0),
-                                                    ),
-                                                  ),
-                                                  child: Column(
-                                                    children: [
-                                                      GestureDetector(
-                                                        child: Container(
-                                                          child: Text(
-                                                            "编辑日记",
-                                                            style: TextStyle(
-                                                                fontSize:
-                                                                    Adapt.pt(
-                                                                        18)),
-                                                          ),
-                                                          margin:
-                                                              EdgeInsets.all(
-                                                                  Adapt.pt(15)),
-                                                        ),
-                                                      ),
-                                                      Divider(
-                                                        color: Colors.grey,
-                                                      ),
-                                                      GestureDetector(
-                                                        child: Container(
-                                                          child: Text(
-                                                            "删除日记",
-                                                            style: TextStyle(
-                                                                fontSize:
-                                                                    Adapt.pt(
-                                                                        18)),
-                                                          ),
-                                                          margin:
-                                                              EdgeInsets.all(
-                                                                  Adapt.pt(10)),
-                                                        ),
-                                                        onTap: () async {
-                                                          await delete(
-                                                              token,
-                                                              _get
+                                                        GestureDetector(
+                                                          behavior: HitTestBehavior.translucent,
+                                                          onTap: () async {
+                                                            await getDiaryofDiarys
+                                                                .getofDiarys(
+                                                                token,
+                                                                _get
+                                                                    .data!
+                                                                    .records[
+                                                                index]
+                                                                    .journalGroupIdAt);
+                                                            if (getDiaryofDiarys
+                                                                .diarys
+                                                                .code ==
+                                                                200) {
+                                                              deleteDiary(_get
                                                                   .data!
                                                                   .records[
-                                                                      index]
-                                                                  .journalId
-                                                                  .toString());
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              },
-                                            ).then((value) {
-                                              setState(() {});
-                                            });
-                                          },
-                                          icon: Icon(
-                                            Icons.more_horiz,
-                                            size: Adapt.pt(25),
-                                            color: Color(0xFF7B9F4D),
+                                                              index]
+                                                                  .journalId.toString(), _get
+                                                                  .data!
+                                                                  .records[
+                                                              index]
+                                                                  .journalGroupIdAt.toString());
+                                                              showTureMessage(context);
+                                                            } else {
+                                                              showMessage(
+                                                                  context,
+                                                                  getDiaryofDiarys
+                                                                      .diarys
+                                                                      .message!);
+                                                            }
+                                                          },
+                                                          child: Container(
+                                                            child: Row(
+                                                              children: [
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Icon(
+                                                                  Icons
+                                                                      .exit_to_app,
+                                                                  size: Adapt.pt(
+                                                                      30),
+                                                                  color: Color(
+                                                                      0xffffe4a8),
+                                                                ),
+                                                                SizedBox(
+                                                                  width: Adapt.pt(
+                                                                      20),
+                                                                ),
+                                                                Text(
+                                                                  "从日记串移出",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                      Adapt.pt(
+                                                                          18)),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            margin:
+                                                            EdgeInsets.all(
+                                                                Adapt.hpt(10)),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              );
+                                            },
+                                            icon: Icon(
+                                              MyFlutterApp.circle,
+                                              size: Adapt.pt(18),
+                                              color: Color(0xFF7B9F4D),
+                                            ),
                                           ),
+                                          height: Adapt.hpt(25),
+                                          width: Adapt.pt(25),
                                         ),
-                                        height: Adapt.hpt(25),
-                                        width: Adapt.pt(25),
-                                      ),
-                                      SizedBox(
-                                        width: Adapt.pt(10),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                        SizedBox(
+                                          width: Adapt.pt(10),
+                                        ),
+                                        SizedBox(
+                                          child: IconButton(
+                                            padding: new EdgeInsets.all(0.0),
+                                            onPressed: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return Container(
+                                                    height: Adapt.hpt(130),
+                                                    width: double.infinity,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius:
+                                                      BorderRadius.only(
+                                                        topLeft:
+                                                        const Radius.circular(
+                                                            20.0),
+                                                        topRight:
+                                                        const Radius.circular(
+                                                            20.0),
+                                                      ),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        GestureDetector(
+                                                          behavior: HitTestBehavior.translucent,
+                                                          child: Container(
+                                                            child: Text(
+                                                              "编辑日记",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                  Adapt.hpt(
+                                                                      18)),
+                                                            ),
+                                                            margin:
+                                                            EdgeInsets.all(
+                                                                Adapt.hpt(15)),
+                                                          ),
+                                                          onTap: (){
+
+                                                            Navigator.push(
+                                                                context,
+                                                                CupertinoPageRoute(
+                                                                    builder: (context) =>
+                                                                        gaipage(token: token,inside: _get.data!.records[index].journalText,id: _get.data!.records[index].journalId,
+                                                                        ))).then((value) {
+                                                              Navigator.of(context).pop();
+                                                            });
+                                                          },
+                                                        ),
+                                                        Divider(
+                                                          color: Colors.grey,
+                                                        ),
+                                                        GestureDetector(
+
+                                                          child: Container(
+                                                            child: Text(
+                                                              "删除日记",
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                  Adapt.pt(
+                                                                      18)),
+                                                            ),
+                                                            margin:
+                                                            EdgeInsets.all(
+                                                                Adapt.hpt(10)),
+                                                          ),
+                                                          onTap: () async {
+                                                            await delete(
+                                                                token,
+                                                                _get
+                                                                    .data!
+                                                                    .records[
+                                                                index]
+                                                                    .journalId
+                                                                    .toString());
+                                                            Navigator.of(context)
+                                                                .pop();
+                                                            await createlist(token);
+                                                            setState(() {
+                                                              if(
+                                                              _get.data!.records!=null
+                                                              ){
+                                                                total=_get.data!.records.length;
+                                                              }
+                                                              else{
+                                                                total=0;
+                                                              }
+                                                            });
+                                                          },
+                                                          behavior: HitTestBehavior.translucent,
+                                                        ),
+
+                                                      ],
+                                                    ),
+                                                  );
+                                                },
+                                              ).then((value) {
+                                                setState(() {});
+                                              });
+                                            },
+                                            icon: Icon(
+                                              Icons.more_horiz,
+                                              size: Adapt.pt(25),
+                                              color: Color(0xFF7B9F4D),
+                                            ),
+                                          ),
+                                          height: Adapt.hpt(25),
+                                          width: Adapt.pt(25),
+                                        ),
+                                        SizedBox(
+                                          width: Adapt.pt(10),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        Divider(
-                          height: Adapt.pt(1),
-                          color: Color(0xFFE3E3E3),
-                        )
-                      ],
-                    );
+                            ],
+                          ),
+                          Divider(
+                            height: Adapt.hpt(1),
+                            color: Color(0xFFE3E3E3),
+                          )
+                        ],
+                      );
+                    }
                   }
                 });
           }, childCount: total)),

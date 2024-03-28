@@ -179,7 +179,8 @@ class ImageListCard extends StatefulWidget {
 class _ImageListCardState extends State<ImageListCard> {
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return 
+        Row(
       children: widget.imageCardList,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     );
@@ -360,7 +361,7 @@ class DiaryLine extends StatefulWidget {
   DiaryLine(
       {super.key,
       required this.index /*required this.diaryID,required this.text*/});
-
+  
   @override
   State<DiaryLine> createState() => _DiaryLineState();
 }
@@ -411,6 +412,7 @@ class _DiaryLineState extends State<DiaryLine> {
     this.y2k = DateTime(int.parse(year), int.parse(month), int.parse(days));
 
     getImage();
+
 
     super.initState();
   }
@@ -562,6 +564,7 @@ class TimeData extends StatelessWidget {
   var day;
   var weekday;
   @override
+
   Widget build(BuildContext context) {
     this.moon = time.month.toString() + '月';
     this.day = time.day.toString();
@@ -663,6 +666,26 @@ class _Diarychuan2State extends State<Diarychuan2> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class ImagesofDIary {
   int? code;
