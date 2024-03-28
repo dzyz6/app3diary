@@ -113,6 +113,7 @@ Future<void> getofDiarys(String token,int diaryChuanID) async {
   dio.options.headers['token'] = token;
 Map<String,dynamic> map = Map();
     map['journalGroupId']=diaryChuanID;
+    map['asc']=0;
   Response response = await dio.get(url,data:map);
   diarys =  await Diarys.fromJson(response.data);
   print('sassasas');

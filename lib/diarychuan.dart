@@ -179,8 +179,7 @@ class ImageListCard extends StatefulWidget {
 class _ImageListCardState extends State<ImageListCard> {
   @override
   Widget build(BuildContext context) {
-    return 
-        Row(
+    return Row(
       children: widget.imageCardList,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     );
@@ -380,13 +379,12 @@ class _DiaryLineState extends State<DiaryLine> {
     imagelist = ImagesofDIary.fromJson(response.data);
     print(response.data);
     if (!mounted) {
-  return;
-}
+      return;
+    }
     setState(() {
       if (imagelist.data?.length == 0) {
-        _diarys.removeAt(0);
+
       } else {
-        _diarys.removeAt(0);
         for (var i = 0; i < imagelist.data!.length; i++) {
           _diarys.add(
             Container(
@@ -401,14 +399,7 @@ class _DiaryLineState extends State<DiaryLine> {
     });
   }
 
-  List<Widget> _diarys = [
-    Container(
-      margin: EdgeInsets.only(top: 5),
-      child: Image.asset(image2),
-      width: 200,
-      height: 200,
-    ),
-  ];
+  List<Widget> _diarys = [];
   var y2k;
   @override
   void initState() {
@@ -446,6 +437,12 @@ class _DiaryLineState extends State<DiaryLine> {
                       style: TextStyle(fontSize: 17),
                     ),
                     Column(children: _diarys),
+                      DiaryCondition(
+                        text1: getDiaryofDiarys
+                            .diarys.data![widget.index].createdAt!,
+                        text2:
+                            getDiaryofDiarys.diarys.data![widget.index].location!,
+                      ),
                   ]),
             ),
           ),
@@ -456,7 +453,8 @@ class _DiaryLineState extends State<DiaryLine> {
 }
 
 class DiaryCondition extends StatefulWidget {
-  const DiaryCondition({super.key});
+  String text1, text2;
+  DiaryCondition({super.key, required this.text1, required this.text2});
 
   @override
   State<DiaryCondition> createState() => _DiaryConditionState();
@@ -472,15 +470,15 @@ class _DiaryConditionState extends State<DiaryCondition> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
-              'Time',
+              widget.text1.substring(12,17).replaceAll('-', '：'),
               style: TextStyle(color: Color(0xff888888), fontSize: 10),
             ),
             Container(
                 height: 20,
                 width: 20,
-                child: Image.asset('lib/assets/images/download.png')),
+                child: Image.asset('lib/assets/images/download.jpg')),
             Text(
-              'your download',
+              widget.text2,
               style: TextStyle(color: Color(0xff217FD6), fontSize: 10),
             )
           ],

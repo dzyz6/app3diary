@@ -407,6 +407,8 @@ class _diarypageState extends State<diarypage> {
                                                     children: [
                                                       GestureDetector(
                                                         onTap: () async {
+                                                                          Navigator.pop(context);
+
                                                           await getDiaryofDiarys
                                                               .getofDiarys(
                                                                   token,
