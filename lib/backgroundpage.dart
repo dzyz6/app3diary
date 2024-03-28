@@ -1,16 +1,41 @@
+import 'package:diary/persondio.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'diarypage.dart';
 import 'sizecontrol.dart';
 import 'package:image_picker/image_picker.dart';
 
 class backgroundpage extends StatefulWidget {
-  const backgroundpage({super.key});
+  const backgroundpage({Key? key, required this.token}) : super(key: key);
+  final String token;
 
   @override
-  State<backgroundpage> createState() => _backgroundpageState();
+  State<backgroundpage> createState() => _backgroundpageState(token:token);
 }
 
 class _backgroundpageState extends State<backgroundpage> {
-  String value='lib/assets/images/rabbit2.jpg';
+
+  String token;
+
+
+  _backgroundpageState({required this.token});
+
+
+
+  Future<void> ChangeReadyImage(String token,int imagenum) async {
+    Dio dio = Dio();
+    String url = "http://mambaout.xyz/setDefaultPictureByNum";
+    dio.options.baseUrl = url;
+    dio.options.headers['token'] = token;
+    Map<String,dynamic> map = Map();
+    map["background"] = imagenum;
+    map["userProfilePicture"] = 0;
+    Response response = await dio.put(url,data: map);
+    print(response);
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,16 +57,6 @@ class _backgroundpageState extends State<backgroundpage> {
         ),
       ),
 
-
-
-
-
-
-
-
-
-
-
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -59,117 +74,102 @@ class _backgroundpageState extends State<backgroundpage> {
             crossAxisSpacing: 25,
             children: [
              GestureDetector(
-               onTap: (){
-                 setState(() {
-                   value='lib/assets/images/rabbit2.jpg';
-                   Navigator.of(context)..pop(value)..pop(value);
-                 });
+               onTap: ()async{
+                   await ChangeReadyImage(token, 1);
+                   Navigator.of(context)..pop()..pop();
                },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit2.jpg'),
+                    child: Image.network('http://8.130.98.175/images/1.jpg'),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  setState(() {
-                    value='lib/assets/images/rabbit3.jpg';
-                    Navigator.of(context)..pop(value)..pop(value);
-                  });
+                onTap: ()async{
+                  await ChangeReadyImage(token, 2);
+                  Navigator.of(context)..pop()..pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit3.jpg'),
+                    child: Image.network('http://8.130.98.175/images/2.jpg'),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  setState(() {
-                    value='lib/assets/images/rabbit5.jpg';
-                    Navigator.of(context)..pop(value)..pop(value);
-                  });
+                onTap: ()async{
+                  await ChangeReadyImage(token, 3);
+                  Navigator.of(context)..pop()..pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit5.jpg'),
+                    child: Image.network('http://8.130.98.175/images/3.jpg'),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  setState(() {
-                    value='lib/assets/images/rabbit6.jpg';
-                    Navigator.of(context)..pop(value)..pop(value);
-                  });
+                onTap: ()async{
+                  await ChangeReadyImage(token, 4);
+                  Navigator.of(context)..pop()..pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit6.jpg'),
+                    child: Image.network('http://8.130.98.175/images/4.jpg'),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  setState(() {
-                    value='lib/assets/images/rabbit7.jpg';
-                    Navigator.of(context)..pop(value)..pop(value);
-                  });
+                onTap: ()async{
+                  await ChangeReadyImage(token, 5);
+                  Navigator.of(context)..pop()..pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit7.jpg'),
+                    child: Image.network('http://8.130.98.175/images/5.jpg'),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  setState(() {
-                    value='lib/assets/images/rabbit8.jpg';
-                    Navigator.of(context)..pop(value)..pop(value);
-                  });
+                onTap: ()async{
+                  await ChangeReadyImage(token, 6);
+                  Navigator.of(context)..pop()..pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit8.jpg'),
+                    child: Image.network('http://8.130.98.175/images/6.jpg'),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  setState(() {
-                    value='lib/assets/images/rabbit1.jpg';
-                    Navigator.of(context)..pop(value)..pop(value);
-                  });
+                onTap: ()async{
+                  await ChangeReadyImage(token, 7);
+                  Navigator.of(context)..pop()..pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit1.jpg',fit: BoxFit.cover,),
+                    child: Image.network('http://8.130.98.175/images/7.jpg'),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: (){
-                  setState(() {
-                    value='lib/assets/images/rabbit9.jpg';
-                    Navigator.of(context)..pop(value)..pop(value);
-                  });
+                onTap: ()async{
+                  await ChangeReadyImage(token, 18);
+                  Navigator.of(context)..pop()..pop();
                 },
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   child: Container(
-                    child: Image.asset('lib/assets/images/rabbit9.jpg'),
+                    child: Image.network('http://8.130.98.175/images/8.jpg'),
                   ),
                 ),
               ),
+
 
             ],
           ),

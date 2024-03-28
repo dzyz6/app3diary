@@ -17,34 +17,8 @@ import 'gaipage.dart';
 
 var usermessage = UserMessage();
 
-ImageProvider profile() {
-  if (usermessage.data?.backgroundImage == null) {
-    return AssetImage("lib/assets/images/rabbit1.jpg");
-  } else {
-    return NetworkImage(usermessage.data!.backgroundImage ?? "");
-  }
-}
 
-class ProfilePhoto extends StatefulWidget {
-  const ProfilePhoto({super.key});
 
-  @override
-  State<ProfilePhoto> createState() => _ProfilePhotoState();
-}
-
-class _ProfilePhotoState extends State<ProfilePhoto> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: profile(),
-        fit: BoxFit.cover,
-      )),
-      height: Adapt.hpt(260),
-    );
-  }
-}
 
 class diarypage extends StatefulWidget {
   const diarypage({Key? key, required this.token}) : super(key: key);
@@ -58,6 +32,14 @@ List a = ["一", "二", "三", "四", "五", "六", "天"];
 
 class _diarypageState extends State<diarypage> {
   String token;
+
+  ImageProvider profile() {
+    if (usermessage.data?.backgroundImage == null) {
+      return AssetImage("lib/assets/images/rabbit1.jpg");
+    } else {
+      return NetworkImage(usermessage.data!.backgroundImage ?? "");
+    }
+  }
 
   _diarypageState({required this.token});
 
@@ -81,8 +63,6 @@ class _diarypageState extends State<diarypage> {
     map['date'] = null;
     Response response = await dio.get(url, queryParameters: map);
     _get = Get.fromJson(response.data);
-
-
   }
 
 
@@ -103,6 +83,8 @@ class _diarypageState extends State<diarypage> {
     Response response = await dio.get(url,
         queryParameters: queryParameters, options: Options(headers: headers));
     _get2 = Getpicture.fromJson(response.data);
+    print(response);
+    print("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
   }
 
   Future<void> delete(String token,String id) async {
@@ -125,22 +107,26 @@ class _diarypageState extends State<diarypage> {
     Response response = await dio.get(url, data: token);
     usermessage = await UserMessage.fromJson(response.data);
     print(response);
+
   }
 
 
-  
 
   @override
   void initState() {
     super.initState();
+
     createlist(token).then((value) {
       setState(() {
-        total = _get.data!.total;
+        total=_get.data
+        !.total;
       });
-    });
-
+    });;
     getUserMessage(token);
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +165,14 @@ class _diarypageState extends State<diarypage> {
               collapseMode: CollapseMode.pin,
               background: Stack(
                 children: [
-                  ProfilePhoto(),
+              Container(
+              decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: profile(),
+              fit: BoxFit.cover,
+            )),
+      height: Adapt.hpt(260),
+    ),
                   Positioned(
                     child: ClipRRect(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -202,9 +195,10 @@ class _diarypageState extends State<diarypage> {
                               CupertinoPageRoute(
                                   builder: (context) => changepage(
                                         token: token,
-                                      ))).then((value) {
+                                      ))).then((value) async{
+                            await getUserMessage(token);
                             setState(() {
-                              getUserMessage(token);
+
                             });
                           });
                           ;
@@ -240,7 +234,6 @@ class _diarypageState extends State<diarypage> {
           SliverList(
               delegate:
                   SliverChildBuilderDelegate((BuildContext context, int index) {
-            total = _get.data!.total;
             return FutureBuilder(
                 future: createlist(token),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -251,7 +244,7 @@ class _diarypageState extends State<diarypage> {
                     if(total<=0){
                       return Container();
                     }
-                    else{
+                    else {
                       var time="1111111111111111111111111111111111111111";
                       if(_get.data!.records.length>0){
                         inside = _get.data!.records[index].journalText;
@@ -353,6 +346,7 @@ class _diarypageState extends State<diarypage> {
                                           color: Colors.black,
                                         ),
                                       ),
+
                                       _get2.data != null && _get2.data!.length > 0
                                           ? Container(
                                         child: Image.network(

@@ -1,6 +1,7 @@
 import 'package:diary/backgroundpage.dart';
 import 'package:diary/persondio.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'sizecontrol.dart';
 import 'package:image_picker/image_picker.dart';
@@ -101,7 +102,7 @@ class _changepageState extends State<changepage> {
               behavior: HitTestBehavior.opaque,
               onTap: (){
 
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>backgroundpage()),);
+                  Navigator.push(context, CupertinoPageRoute(builder: (context)=>backgroundpage(token: token,)),);
                 ;
                 },
               child: Container(

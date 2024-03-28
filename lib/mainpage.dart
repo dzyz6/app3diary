@@ -1,14 +1,9 @@
-
-import 'package:path_provider/path_provider.dart';
-import 'package:screenshot/screenshot.dart';
-import 'package:screenshot_callback/screenshot_callback.dart';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:ui' as ui;
 import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:screenshot_callback/screenshot_callback.dart';
+
 import 'package:async/async.dart';
 import 'package:diary/assets/icon/my_flutter_app_icons.dart';
 import 'package:diary/diarychuan.dart';
@@ -29,106 +24,23 @@ import 'package:flutter_pickers/time_picker/model/date_mode.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'package:permission_handler/permission_handler.dart';
 import 'dioclass.dart';
 
 var colororigin = Color(0xFF445B28);
 var colorclick = Color(0xFFDCEEC4);
 
-
-var  boundaryKey = GlobalKey();
-
-
-
+var boundaryKey = GlobalKey();
 
 List a = ["一", "二", "三", "四", "五", "六", "天"];
 
 int total = 0;
-String? inside="";
+String? inside = "";
 //获取时间
 DateTime dateTime = DateTime.now();
 
-Widget getItem(int index) {
-  return GestureDetector(
-    onTap: () {
-
-    },
-    child: Column(
-      children: [
-        Container(
-          height: Adapt.pt(79),
-          child:
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(width: Adapt.pt(20),),
-              Column(
-
-                children: [
-                  SizedBox(
-                    height: Adapt.pt(15),
-                  ),
-                  RichText(
-                    text: TextSpan(children: [
-                      TextSpan(
-                          text: "$nowday",
-                          style: TextStyle(
-                              fontSize: Adapt.pt(25), color: Colors.black)),
-                      TextSpan(
-                          text: "$_month",
-                          style: TextStyle(
-                              fontSize: Adapt.pt(15), color: Colors.black)
-                      ),
-                      TextSpan(
-                          text: "月",
-                          style: TextStyle(
-                              fontSize: Adapt.pt(13), color: Colors.black)
-                      ),
-
-                    ]),
-                  ),
-
-                  RichText(text: TextSpan(
-                      children: [
-                        TextSpan(
-                            text: "星期",
-                            style: TextStyle(
-                                fontSize: Adapt.pt(12), color: Colors.black)
-                        ),
-                        TextSpan(
-                          text: a[DateTime(_year, _month, nowday).weekday - 1],
-                          style: TextStyle(
-                              fontSize: Adapt.pt(12), color: Colors.black),
-                        ),
-                      ]
-                  )),
-
-                ],
-
-
-              ),
-              RichText(text: TextSpan(children: [
-                TextSpan(
-                  text: "$inside", style: TextStyle(
-                    fontSize: Adapt.pt(12), color: Colors.black),
-                )
-              ]))
-            ],
-          ),
-
-        ),
-        Divider(
-          height: Adapt.pt(1),
-          color: Color(0xFFE3E3E3),
-        )
-      ],
-    ),
-  );
-}
-
 int nowday = dateTime.day;
-
 
 /// 位置服务
 Future _determinePosition() async {
@@ -174,9 +86,6 @@ Future _determinePosition() async {
   }
 }
 
-
-
-
 class mainpage extends StatefulWidget {
   const mainpage({Key? key, required this.token}) : super(key: key);
 
@@ -194,8 +103,8 @@ class _mainpageState extends State<mainpage> {
   var _get = Get();
   Dio dio = Dio();
 
-
   final AsyncMemoizer _memoizer = AsyncMemoizer();
+
   Future<void> createlist(String token) async {
     String url = "https://mambaout.xyz/getJournalsByUid";
     dio.options.baseUrl = url;
@@ -213,27 +122,6 @@ class _mainpageState extends State<mainpage> {
     print('aaaaaaaaaaaaaaaaaaaaaaaaa');
     print(total);
     print("$_year" + "-" + "$_month" + "-" + "$nowday");
-  }
-
-  _createlist(){
-    return this._memoizer.runOnce(() async{
-      String url = "https://mambaout.xyz/getJournalsByUid";
-      dio.options.baseUrl = url;
-      dio.options.headers['token'] = token;
-      Map<String, dynamic> map = Map();
-      map['page'] = 1;
-      map['pageSize'] = 100;
-      map['journalTitle'] = "";
-      map['range'] = 0;
-      map['date'] = "$_year" + "-" + "$_month" + "-" + "$nowday";
-      Response response = await dio.get(url, queryParameters: map);
-      _get = Get.fromJson(response.data);
-
-      print(inside);
-      print('aaaaaaaaaaaaaaaaaaaaaaaaa');
-      print(total);
-      print("$_year" + "-" + "$_month" + "-" + "$nowday");
-    });
   }
 
   String token;
@@ -304,8 +192,6 @@ class _mainpageState extends State<mainpage> {
     getUserMessage.getUserMessage(token);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -313,10 +199,9 @@ class _mainpageState extends State<mainpage> {
         controller: _pagecontroller,
         physics: NeverScrollableScrollPhysics(),
         children: [
-  RepaintBoundary(
-  key:  boundaryKey,
+          RepaintBoundary(
+            key: boundaryKey,
             child: Scaffold(
-
               appBar: AppBar(
                 automaticallyImplyLeading: false,
                 title: GestureDetector(
@@ -353,27 +238,28 @@ class _mainpageState extends State<mainpage> {
                                       topLeft: Radius.circular(Adapt.pt(20))),
                                   color: Colors.white)),
                           mode: DateMode.YM, onConfirm: (p) {
-                            if(_month==dateTime.month&&_year==dateTime.year){
-                              setState(() {
-                                _month = p.month as int;
-                                _year = p.year as int;
-                                firstDayOfMonth = DateTime(_year, _month, 1);
-                                lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                                _itemStatuses = List.generate(42, (_) => false);
-                                total = 0;
-                              });
-                            }
-                            else{
-                              setState(() {
-                                _month = p.month as int;
-                                _year = p.year as int;
-                                firstDayOfMonth = DateTime(_year, _month, 1);
-                                lastDayOfMonth = DateTime(_year, _month + 1, 0);
-                                _toggleItemStatus(dateTime.day + firstDayOfMonth.weekday - 1);
-                                total = 0;
-                              });
-                            }
+                        if (_month == dateTime.month &&
+                            _year == dateTime.year) {
+                          setState(() {
+                            _month = p.month as int;
+                            _year = p.year as int;
+                            firstDayOfMonth = DateTime(_year, _month, 1);
+                            lastDayOfMonth = DateTime(_year, _month + 1, 0);
+                            _itemStatuses = List.generate(42, (_) => false);
+                            total = 0;
                           });
+                        } else {
+                          setState(() {
+                            _month = p.month as int;
+                            _year = p.year as int;
+                            firstDayOfMonth = DateTime(_year, _month, 1);
+                            lastDayOfMonth = DateTime(_year, _month + 1, 0);
+                            _toggleItemStatus(
+                                dateTime.day + firstDayOfMonth.weekday - 1);
+                            total = 0;
+                          });
+                        }
+                      });
                     },
                     child: RichText(
                       text: TextSpan(
@@ -420,8 +306,12 @@ class _mainpageState extends State<mainpage> {
                   //搜素
                   IconButton(
                     onPressed: () {
-                      Navigator.push(context,
-                          CupertinoPageRoute(builder: (context) => searchpage(token: token,)));
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (context) => searchpage(
+                                    token: token,
+                                  )));
                     },
                     icon: Icon(
                       Icons.search_outlined,
@@ -448,8 +338,8 @@ class _mainpageState extends State<mainpage> {
               ),
               body:
 
-              //主页面
-              Column(
+                  //主页面
+                  Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -483,20 +373,23 @@ class _mainpageState extends State<mainpage> {
                               border: Border.all(color: Colors.black)),
                         ),
                       ),
-                      Container(
-                        padding: EdgeInsets.only(
-                            left: Adapt.pt(12),
-                            right: Adapt.pt(12),
-                            top: Adapt.pt(3),
-                            bottom: Adapt.pt(3)),
-                        margin: EdgeInsets.all(Adapt.pt(5)),
-                        child: Text(
-                          "分享",
-                          style: TextStyle(fontSize: Adapt.pt(13)),
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: Adapt.pt(12),
+                              right: Adapt.pt(12),
+                              top: Adapt.pt(3),
+                              bottom: Adapt.pt(3)),
+                          margin: EdgeInsets.all(Adapt.pt(5)),
+                          child: Text(
+                            "分享",
+                            style: TextStyle(fontSize: Adapt.pt(13)),
+                          ),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: Colors.black)),
                         ),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(color: Colors.black)),
                       ),
                       SizedBox(
                         width: Adapt.pt(10),
@@ -612,7 +505,8 @@ class _mainpageState extends State<mainpage> {
                         if (month1 != _month) {
                           return Container(
                             width: Adapt.pt(300) / 7,
-                            decoration: BoxDecoration(color: Colors.transparent),
+                            decoration:
+                                BoxDecoration(color: Colors.transparent),
                           );
                         }
                         var _color1 = Color(0xFFFAE7E7);
@@ -642,7 +536,8 @@ class _mainpageState extends State<mainpage> {
                           child: Container(
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15)),
                               color: _itemStatuses[index]
                                   ? containerColor2
                                   : containerColor,
@@ -665,9 +560,35 @@ class _mainpageState extends State<mainpage> {
                   ),
                   Center(
                     child: GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (BuildContext buildcontext) {
+                            return Column(
+                              children: [
+                                Container(
+                                  child: Center(child: Text("从手机相册选择",style: TextStyle(fontSize: Adapt.pt(20)),)),
+                                  width: double.infinity,
+                                  margin: EdgeInsets.all(Adapt.pt(20)),
+                                ),
+                                Divider(),
+                                Container(
+                                  child: Center(child: Text("拍一张",style: TextStyle(fontSize: Adapt.pt(20)),)),
+                                  width: double.infinity,
+                                  margin: EdgeInsets.only(top: Adapt.pt(20)),
+                                ),
+                              ],
+                            );
+                          },
+                          constraints: BoxConstraints(
+                            maxHeight: Adapt.hpt(155),
+                          ),
+                        );
+                      },
                       child: Text(
                         "自定义日历图",
-                        style: TextStyle(fontSize: 12, color: Color(0xFF217FD6)),
+                        style:
+                            TextStyle(fontSize: 12, color: Color(0xFF217FD6)),
                       ),
                     ),
                   ),
@@ -678,36 +599,37 @@ class _mainpageState extends State<mainpage> {
                     height: Adapt.pt(2),
                     color: Color(0xFFE3E3E3),
                   ),
-                  FutureBuilder(future: createlist(token),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<void> snapshot) {
+                  FutureBuilder(
+                      future: createlist(token),
+                      builder:
+                          (BuildContext context, AsyncSnapshot<void> snapshot) {
                         switch (snapshot.connectionState) {
                           case ConnectionState.waiting:
                             return Center(
-                              child: Container(
-
-                              ),
+                              child: Container(),
                             );
 
                           case ConnectionState.done:
-
-                              if (_get != null &&
-                                  _get.data != null &&
-                                  _get.data!.records.isNotEmpty &&
-                                  _get.data?.total != 0) {
-                                total = _get.data!.total;
-                              } else {
-                                total = 0;
-                                inside = "";
-                              }
+                            if (_get != null &&
+                                _get.data != null &&
+                                _get.data!.records.isNotEmpty &&
+                                _get.data?.total != 0) {
+                              total = _get.data!.total;
+                            } else {
+                              total = 0;
+                              inside = "";
+                            }
 
                             return Expanded(
                               child: ListView.builder(
                                   itemCount: total,
                                   itemExtent: Adapt.pt(80),
-                                  itemBuilder: (BuildContext context, int index) {
-                                    inside = _get.data!.records[index].journalText;
-                                    var time = _get.data!.records[index].createdAt;
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    inside =
+                                        _get.data!.records[index].journalText;
+                                    var time =
+                                        _get.data!.records[index].createdAt;
                                     var creattime = time.substring(12, 14);
                                     var creattime2 = time.substring(15, 17);
                                     return GestureDetector(
@@ -716,11 +638,12 @@ class _mainpageState extends State<mainpage> {
                                         Navigator.push(
                                             context,
                                             CupertinoPageRoute(
-                                                builder: (context) =>
-                                                    Kanpage(token: token,
+                                                builder: (context) => Kanpage(
+                                                      token: token,
                                                       month: _month,
                                                       year: _year,
-                                                      nowday: nowday,)));
+                                                      nowday: nowday,
+                                                    )));
                                       },
                                       child: Column(
                                         children: [
@@ -741,37 +664,53 @@ class _mainpageState extends State<mainpage> {
                                                         TextSpan(
                                                             text: "$nowday",
                                                             style: TextStyle(
-                                                                fontSize: Adapt.pt(25),
-                                                                color: Colors.black)),
+                                                                fontSize:
+                                                                    Adapt.pt(
+                                                                        25),
+                                                                color: Colors
+                                                                    .black)),
                                                         TextSpan(
                                                             text: "$_month",
                                                             style: TextStyle(
-                                                                fontSize: Adapt.pt(15),
-                                                                color: Colors.black)),
+                                                                fontSize:
+                                                                    Adapt.pt(
+                                                                        15),
+                                                                color: Colors
+                                                                    .black)),
                                                         TextSpan(
                                                             text: "月",
                                                             style: TextStyle(
-                                                                fontSize: Adapt.pt(13),
-                                                                color: Colors.black)),
+                                                                fontSize:
+                                                                    Adapt.pt(
+                                                                        13),
+                                                                color: Colors
+                                                                    .black)),
                                                       ]),
                                                     ),
                                                     RichText(
-                                                        text: TextSpan(children: [
-                                                          TextSpan(
-                                                              text: "星期",
-                                                              style: TextStyle(
-                                                                  fontSize: Adapt.pt(12),
-                                                                  color: Colors.black)),
-                                                          TextSpan(
-                                                            text: a[
-                                                            DateTime(_year, _month, nowday)
+                                                        text:
+                                                            TextSpan(children: [
+                                                      TextSpan(
+                                                          text: "星期",
+                                                          style: TextStyle(
+                                                              fontSize:
+                                                                  Adapt.pt(12),
+                                                              color: Colors
+                                                                  .black)),
+                                                      TextSpan(
+                                                        text: a[DateTime(
+                                                                    _year,
+                                                                    _month,
+                                                                    nowday)
                                                                 .weekday -
-                                                                1],
-                                                            style: TextStyle(
-                                                                fontSize: Adapt.pt(12),
-                                                                color: Colors.black),
-                                                          ),
-                                                        ])),
+                                                            1],
+                                                        style: TextStyle(
+                                                            fontSize:
+                                                                Adapt.pt(12),
+                                                            color:
+                                                                Colors.black),
+                                                      ),
+                                                    ])),
                                                   ],
                                                 ),
                                                 SizedBox(
@@ -780,30 +719,40 @@ class _mainpageState extends State<mainpage> {
                                                 Expanded(
                                                   child: Column(
                                                     crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
+                                                        CrossAxisAlignment
+                                                            .start,
                                                     mainAxisAlignment:
-                                                    MainAxisAlignment.center,
+                                                        MainAxisAlignment
+                                                            .center,
                                                     children: [
                                                       Text(
                                                         "$inside",
                                                         style: TextStyle(
-                                                          fontSize: Adapt.pt(15),
+                                                          fontSize:
+                                                              Adapt.pt(15),
                                                           color: Colors.black,
                                                         ),
                                                         maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                         softWrap: false,
                                                       ),
                                                       Text(
-                                                        "$creattime" + ":" + "$creattime2",
+                                                        "$creattime" +
+                                                            ":" +
+                                                            "$creattime2",
                                                         style: TextStyle(
-                                                            fontSize: Adapt.pt(8),
-                                                            color: Color(0xff6b6b6b)),
+                                                            fontSize:
+                                                                Adapt.pt(8),
+                                                            color: Color(
+                                                                0xff6b6b6b)),
                                                       ),
                                                     ],
                                                   ),
                                                 ),
-                                                SizedBox(width: Adapt.pt(40),)
+                                                SizedBox(
+                                                  width: Adapt.pt(40),
+                                                )
                                               ],
                                             ),
                                           ),
@@ -814,7 +763,6 @@ class _mainpageState extends State<mainpage> {
                                         ],
                                       ),
                                     );
-
                                   }),
                             );
                           case ConnectionState.none:
@@ -827,9 +775,10 @@ class _mainpageState extends State<mainpage> {
               ),
             ),
           ),
-
-          diarypage( token: token,),
-          Diarychuan(token:token),
+          diarypage(
+            token: token,
+          ),
+          Diarychuan(token: token),
           Person(token: token),
         ],
       ),
@@ -873,11 +822,13 @@ class _mainpageState extends State<mainpage> {
                 onPressed: () {
                   Navigator.push(
                       context,
-                      SlideRoute(page: editorpage(
-                        token: token,))).then((value) {
-                          setState(() {
-
-                          });
+                      SlideRoute(
+                          page: editorpage(
+                        token: token,
+                      ))).then((value) {
+                    setState(() {
+                      createlist(token);
+                    });
                   });
                 },
                 elevation: 0,
